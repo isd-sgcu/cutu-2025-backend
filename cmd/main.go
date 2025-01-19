@@ -4,11 +4,14 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger"
 	"github.com/isd-sgcu/cutu2025-backend/config"
+	_ "github.com/isd-sgcu/cutu2025-backend/docs"
 	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
+	"github.com/isd-sgcu/cutu2025-backend/middleware"
 	"github.com/isd-sgcu/cutu2025-backend/repository"
+	"github.com/isd-sgcu/cutu2025-backend/routes"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
-	"github.com/isd-sgcu/cutu2025-backend/routes" // Assuming you have routes package
 )
 
 func main() {
@@ -17,6 +20,7 @@ func main() {
 
 	// Initialize Fiber app
 	app := fiber.New()
+	app.Use(middleware.RequestLoggerMiddleware())
 
 	// Connect to the database
 	db := infrastructure.ConnectDatabase(cfg)
@@ -29,6 +33,10 @@ func main() {
 
 	// Register routes
 	routes.RegisterUserRoutes(app, userUsecase) // Register the user routes
+
+	app.Get("/swagger/*", swagger.New(swagger.Config{
+		URL: "/swagger/doc.json", // URL to access the Swagger docs
+	}))
 
 	// Start the server
 	if err := app.Listen(":3000"); err != nil {

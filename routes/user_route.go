@@ -10,7 +10,7 @@ import (
 func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase) {
 	userHandler := handler.NewUserHandler(userUsecase)
 
-	api := app.Group("/api/users", middleware.TimingMiddleware())
-	api.Get("/", userHandler.GetAll)
-	api.Post("/register", middleware.AuthMiddleware(), userHandler.Register)
+	api := app.Group("/api/users")
+	api.Get("/", userHandler.GetAll, middleware.AuthMiddleware())
+	api.Post("/register", userHandler.Register)
 }
