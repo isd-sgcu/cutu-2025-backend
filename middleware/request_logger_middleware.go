@@ -14,7 +14,7 @@ func RequestLoggerMiddleware() fiber.Handler {
 		method := c.Method()          // Get the HTTP method (GET, POST, etc.)
 		path := c.Path()              // Get the request path
 		err := c.Next()               // Continue to the next middleware or handler
-		duration := time.Since(start)  // Measure the duration
+		duration := time.Since(start) // Measure the duration
 
 		status := c.Response().StatusCode() // Get the HTTP status code of the response
 
@@ -22,19 +22,5 @@ func RequestLoggerMiddleware() fiber.Handler {
 		log.Printf("[%s] %s %s took %v, Status: %d", time.Now().Format(time.RFC3339), method, path, duration, status)
 
 		return err
-	}
-}
-
-
-// AuthMiddleware checks for a dummy authorization header
-func AuthMiddleware() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		authHeader := c.Get("Authorization")
-		if authHeader != "Bearer my-secret-token" {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-				"error": "Unauthorized",
-			})
-		}
-		return c.Next() // Continue if authorized
 	}
 }

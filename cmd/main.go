@@ -39,7 +39,7 @@ func main() {
 	}))
 
 	// Start the server
-	if err := app.Listen(":3000"); err != nil {
+	if err := app.Listen(":4000"); err != nil {
 		log.Fatal("Error starting the server:", err)
 	}
 }

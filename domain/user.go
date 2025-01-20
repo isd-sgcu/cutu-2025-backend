@@ -11,4 +11,5 @@ type User struct {
 	InvitationCode *string `json:"invitationCode"`
 	State          string  `json:"state"`
 	ImageURL       string  `json:"imageURL"`
+	Role           Role    `json:"role"`
 }
