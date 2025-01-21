@@ -1,39 +1,105 @@
 package handler
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/isd-sgcu/cutu2025-backend/domain"
+	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
+	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 // UserHandler represents the handler for user-related endpoints
 type UserHandler struct {
-	Usecase *usecase.UserUsecase
+	Usecase   *usecase.UserUsecase
+	S3Service *infrastructure.S3Client
 }
 
 // NewUserHandler creates a new UserHandler
-func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
-	return &UserHandler{Usecase: usecase}
+func NewUserHandler(usecase *usecase.UserUsecase, s3Service *infrastructure.S3Client) *UserHandler {
+	return &UserHandler{Usecase: usecase, S3Service: s3Service}
 }
 
 // Register godoc
 // @Summary Register a new user
 // @Description Register a new user in the system
-// @Accept  json
+// @Accept  multipart/form-data
 // @Produce  json
 // @Security BearerAuth
-// @Param user body domain.User true "User data"
+// @Param name formData string true "User Name"
+// @Param email formData string true "User Email"
+// @Param phone formData string true "User Phone"
+// @Param university formData string true "User University"
+// @Param sizeJersey formData string true "Jersey Size"
+// @Param foodLimitation formData string false "Food Limitation"
+// @Param invitationCode formData string false "Invitation Code"
+// @Param state formData string true "User State"
+// @Param image formData file true "User Image"
 // @Success 201 {object} domain.TokenResponse
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
 // @Failure 500 {object} domain.ErrorResponse "Failed to create user"
 // @Router /api/users/register [post]
 func (h *UserHandler) Register(c *fiber.Ctx) error {
-	user := new(domain.User)
-	if err := c.BodyParser(user); err != nil {
+	// Parse multipart form
+	form, err := c.MultipartForm()
+	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
 	}
 
+	// Get image file from form
+	imageFiles := form.File["image"]
+	if len(imageFiles) == 0 {
+		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Image is required"})
+	}
+
+	imageFile := imageFiles[0]
+
+	// Open file stream
+	file, err := imageFile.Open()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to open image file"})
+	}
+	defer file.Close()
+
+	// Convert the file stream to a byte slice
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
+	}
+
+	// Convert byte slice to bytes.Reader for UploadFile method
+	fileReader := bytes.NewReader(fileBytes)
+
+	// Upload the file using the existing UploadFile method
+	s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
+	s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
+	}
+
+	// Map form values to user object
+	user := &domain.User{
+		Name:           form.Value["name"][0],
+		Email:          form.Value["email"][0],
+		Phone:          form.Value["phone"][0],
+		University:     form.Value["university"][0],
+		SizeJersey:     form.Value["sizeJersey"][0],
+		FoodLimitation: form.Value["foodLimitation"][0],
+		InvitationCode: func() *string {
+			if v := form.Value["invitationCode"]; len(v) > 0 {
+				return &v[0]
+			}
+			return nil
+		}(),
+		State:    form.Value["state"][0],
+		ImageURL: s3URL,
+	}
+
+	// Register user
 	tokenResponse, err := h.Usecase.Register(user)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to create user"})

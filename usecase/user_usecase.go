@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/isd-sgcu/cutu2025-backend/domain"
-	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
@@ -23,17 +22,23 @@ func NewUserUsecase(repo UserRepositoryInterface) *UserUsecase {
 	return &UserUsecase{Repo: repo}
 }
 
-func (u *UserUsecase) Register(user *domain.User, imagePath string) (domain.TokenResponse, error) {
-	// Upload the image to S3 and get the image URL
-	imageKey := fmt.Sprintf("user-images/%s.jpg", user.ID) // Customize the key as needed
-	imageURL, err := infrastructure.UploadFileToS3(imagePath, imageKey)
-	if err != nil {
-		return domain.TokenResponse{}, fmt.Errorf("failed to upload image: %v", err)
+// assing role based on phone number
+func (u *UserUsecase) assignRole(user *domain.User) {
+	// mock phone number
+	staff_phones := []string{"06", "08", "09"}
+	user.Role = domain.Student
+	if user.Phone != "" {
+		for _, phone := range staff_phones {
+			if user.Phone == phone {
+				user.Role = domain.Staff
+				break
+			}
+		}
 	}
+}
 
-	// Update user with the uploaded image URL
-	user.ImageURL = imageURL
-
+func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) {
+	u.assignRole(user)
 	// Save user in the repository
 	if err := u.Repo.Create(user); err != nil {
 		return domain.TokenResponse{}, err
@@ -48,6 +53,7 @@ func (u *UserUsecase) Register(user *domain.User, imagePath string) (domain.Toke
 
 	return domain.TokenResponse{
 		UserID:       user.ID,
+		QrURL:        fmt.Sprintf("http://localhost:4000/api/users/qr/%s", user.ID),
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 	}, nil

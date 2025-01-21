@@ -205,19 +205,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.Role": {
-            "type": "string",
-            "enum": [
-                "participant",
-                "staff",
-                "admin"
-            ],
-            "x-enum-varnames": [
-                "RoleParticipant",
-                "RoleStaff",
-                "RoleAdmin"
-            ]
-        },
         "domain.TokenResponse": {
             "type": "object",
             "properties": {
@@ -255,9 +242,6 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/domain.Role"
                 },
                 "sizeJersey": {
                     "type": "string"

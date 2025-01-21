@@ -4,16 +4,6 @@ definitions:
       error:
         type: string
     type: object
-  domain.Role:
-    enum:
-    - participant
-    - staff
-    - admin
-    type: string
-    x-enum-varnames:
-    - RoleParticipant
-    - RoleStaff
-    - RoleAdmin
   domain.TokenResponse:
     properties:
       accessToken:
@@ -39,8 +29,6 @@ definitions:
         type: string
       phone:
         type: string
-      role:
-        $ref: '#/definitions/domain.Role'
       sizeJersey:
         type: string
       state:

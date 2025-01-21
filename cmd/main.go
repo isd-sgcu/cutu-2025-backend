@@ -25,6 +25,9 @@ func main() {
 	// Connect to the database
 	db := infrastructure.ConnectDatabase(cfg)
 
+	// Connect to S3
+	s3 := infrastructure.NewS3Client(cfg)
+
 	// Initialize repositories
 	repo := repository.NewUserRepository(db)
 
@@ -32,7 +35,7 @@ func main() {
 	userUsecase := usecase.NewUserUsecase(repo)
 
 	// Register routes
-	routes.RegisterUserRoutes(app, userUsecase) // Register the user routes
+	routes.RegisterUserRoutes(app, userUsecase, s3) // Register the user routes
 
 	app.Get("/swagger/*", swagger.New(swagger.Config{
 		URL: "/swagger/doc.json", // URL to access the Swagger docs
