@@ -12,6 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 - golang 1.22
 - docker
 - makefile
+- air (optional for auto reload)
 
 ### Installing
 1. Clone the repo
@@ -19,7 +20,20 @@ These instructions will get you a copy of the project up and running on your loc
 3. Run `go mod download` to download all the dependencies
 
 ### Running
-1. Run `docker-compose up -d` to start the database (optional for local development database)
-2. Run `make server` or `go run cmd/main.go` to start the server
+#### Database
+Run to start the local database for development
+```sh
+docker-compose up -d
+```
+
+#### Server
+Option 1: Standard mode
+```bash
+make server
+```
+Option 2: Development mode with auto reload
+```bash
+air -c .air.toml
+```
 
 ### API
