@@ -1,7 +1,10 @@
 package usecase
 
 import (
+	"fmt"
+
 	"github.com/isd-sgcu/cutu2025-backend/domain"
+	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
@@ -20,7 +23,17 @@ func NewUserUsecase(repo UserRepositoryInterface) *UserUsecase {
 	return &UserUsecase{Repo: repo}
 }
 
-func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) {
+func (u *UserUsecase) Register(user *domain.User, imagePath string) (domain.TokenResponse, error) {
+	// Upload the image to S3 and get the image URL
+	imageKey := fmt.Sprintf("user-images/%s.jpg", user.ID) // Customize the key as needed
+	imageURL, err := infrastructure.UploadFileToS3(imagePath, imageKey)
+	if err != nil {
+		return domain.TokenResponse{}, fmt.Errorf("failed to upload image: %v", err)
+	}
+
+	// Update user with the uploaded image URL
+	user.ImageURL = imageURL
+
 	// Save user in the repository
 	if err := u.Repo.Create(user); err != nil {
 		return domain.TokenResponse{}, err
