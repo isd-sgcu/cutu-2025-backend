@@ -1,2 +1,8 @@
+# environment file
 .env
-docker-compose.yml
+
+# data
+volumes/*
+
+# compiled output
+tmp/*
