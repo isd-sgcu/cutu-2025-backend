@@ -27,11 +27,11 @@ func (u *UserUsecase) GetAll() ([]domain.User, error) {
 // assing role based on phone number
 func (u *UserUsecase) assignRole(user *domain.User) {
 	// mock phone number
-	phone_tel_list := []string{"06", "08", "09"}
+	staff_phones := []string{"06", "08", "09"}
 	user.Role = domain.Student
 	if user.Phone != "" {
-		for _, tel := range phone_tel_list {
-			if user.Phone == tel {
+		for _, phone := range staff_phones {
+			if user.Phone == phone {
 				user.Role = domain.Staff
 				break
 			}
