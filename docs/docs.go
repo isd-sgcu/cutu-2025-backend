@@ -161,14 +161,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/domain.User"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "400": {
+                        "description": "User has already entered",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
                     },
-                    "500": {
-                        "description": "Failed to fetch user",
+                    "404": {
+                        "description": "User not found",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
@@ -380,6 +380,52 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to update user role",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/signin": {
+            "post": {
+                "description": "Signin",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Signin",
+                "parameters": [
+                    {
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to signin",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
@@ -639,8 +685,9 @@ const docTemplate = `{
                 "invitationCode": {
                     "type": "string"
                 },
-                "isEntered": {
-                    "type": "boolean"
+                "lastEntered": {
+                    "description": "Timestamp for the last QR scan",
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
