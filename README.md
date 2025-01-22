@@ -1,7 +1,3 @@
-Here's the updated `README.md` based on your new API routes:
-
----
-
 # CUTU-2025 Backend
 
 ## Stack
@@ -75,184 +71,183 @@ air -c .air.toml
 
 This option will automatically reload the server when you change any Go files.
 
-## User API Documentation
+Here is the updated `README.md` based on the new API:
 
-### Endpoints
 
-#### GET /api/users
+# User Management API
 
-**Summary:**  
-Get all users.
+This API provides endpoints for managing users in the system, including retrieving, updating, and registering users. It also includes functionality for handling QR codes and managing user roles.
 
-**Permission:** BearerAuth (Role: Staff or Admin)
+## API Endpoints
 
-**Description:**  
-Retrieve a list of all users. Access is restricted to staff and admin roles.
+### 1. Get All Users
+
+**Endpoint:** `/api/users`  
+**Method:** `GET`
+
+Retrieve a list of all users.
 
 **Response:**
+- `200 OK`: Returns a list of users.
+- `500 Internal Server Error`: Failed to fetch users.
 
-| Status | Description               |
-|--------|---------------------------|
-| 200    | List of all users         |
-| 500    | Failed to fetch users     |
+### 2. Get User by ID
 
-#### GET /api/users/{id}
+**Endpoint:** `/api/users/{id}`  
+**Method:** `GET`
 
-**Summary:**  
-Get user by ID.
-
-**Permission:** BearerAuth
-
-**Description:**  
 Retrieve a user by its ID.
 
-**Request Parameters:**
-
-| Parameter | Type   | Required | Description |
-|-----------|--------|----------|-------------|
-| id        | string | true     | User ID     |
+**Parameters:**
+- `id` (path) - The ID of the user.
 
 **Response:**
+- `200 OK`: Returns the user details.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to fetch user.
 
-| Status | Description              |
-|--------|--------------------------|
-| 200    | User details             |
-| 404    | User not found           |
-| 500    | Failed to fetch user     |
+### 3. Register a New User
 
-#### POST /api/users/register
+**Endpoint:** `/api/users/register`  
+**Method:** `POST`
 
-**Summary:**  
 Register a new user in the system.
 
-**Permission:** No
-
-**Description:**  
-This endpoint allows users to register by submitting their personal information and an image.
-
-**Request Format:** `multipart/form-data`
-
-**Request Parameters:**
-
-| Parameter      | Type   | Required | Description           |
-|----------------|--------|----------|-----------------------|
-| id             | string | true     | User ID               |
-| name           | string | true     | User Name             |
-| email          | string | true     | User Email            |
-| phone          | string | true     | User Phone            |
-| university     | string | true     | User University       |
-| sizeJersey     | string | true     | Jersey Size           |
-| foodLimitation | string | false    | Food Limitation       |
-| invitationCode | string | false    | Invitation Code       |
-| state          | string | true     | User State            |
-| image          | file   | true     | User Image            |
+**Parameters (form data):**
+- `id` (string) - User ID
+- `name` (string) - User Name
+- `email` (string) - User Email
+- `phone` (string) - User Phone
+- `university` (string) - User University
+- `sizeJersey` (string) - Jersey Size
+- `foodLimitation` (string) - Food Limitation
+- `invitationCode` (string) - Invitation Code
+- `status` (string) - User Status (`student`, `alumni`, `general_public`)
+- `image` (file) - User Image
+- `graduatedYear` (string) - Graduated Year
+- `faculty` (string) - Faculty
+- `education` (string) - User Education (`studying`, `graduated`)
 
 **Response:**
+- `201 Created`: User successfully created.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `500 Internal Server Error`: Failed to create user.
 
-| Status | Description              |
-|--------|--------------------------|
-| 201    | User successfully created|
-| 400    | Invalid input            |
-| 500    | Failed to create user    |
+### 4. Update User by ID
 
-**Success Response (201):**
+**Endpoint:** `/api/users/{id}`  
+**Method:** `PATCH`
+
+Update a user by its ID.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+- `user` (body) - User data (JSON).
+
+**Response:**
+- `204 No Content`: User successfully updated.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user.
+
+### 5. Get QR Code URL for User
+
+**Endpoint:** `/api/users/qr/{id}`  
+**Method:** `GET`
+
+Retrieve a QR code URL for a user.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Response:**
+- `200 OK`: Returns the QR code URL.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to fetch user.
+
+### 6. Scan QR Code
+
+**Endpoint:** `/api/users/qr/{id}`  
+**Method:** `POST`
+
+Scan a QR code and perform associated actions.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Response:**
+- `200 OK`: User scanned successfully.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to process QR code.
+
+### 7. Update User Role by ID
+
+**Endpoint:** `/api/users/role/{id}`  
+**Method:** `PATCH`
+
+Update a user role by its ID.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+- `role` (body) - User role (string).
+
+**Response:**
+- `204 No Content`: User role updated successfully.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user role.
+
+## Error Responses
+
+### Error Response Format
 
 ```json
 {
-    "userId": "1345",
-    "qrUrl": "http://localhost:4000/api/users/qr/1345",
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mzc1MzMxNTQsIn..."
+  "error": "Error message here"
 }
 ```
 
-#### PATCH /api/users/{id}
+### Common Error Codes
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized access.
+- `403 Forbidden`: Forbidden action.
+- `404 Not Found`: Resource not found.
+- `500 Internal Server Error`: An error occurred on the server.
 
-**Summary:**  
-Update user by ID.
+## Definitions
 
-**Permission:** BearerAuth (Role: Admin)
+### Education Enum
+- `studying`: The user is currently studying.
+- `graduated`: The user has graduated.
 
-**Description:**  
-Update a user by its ID.
+### Role Enum
+- `member`: A member user.
+- `staff`: A staff user.
+- `admin`: An admin user.
 
-**Request Parameters:**
+### Status Enum
+- `student`: The user is a student.
+- `alumni`: The user is an alumni.
+- `general_public`: The user is from the general public.
 
-| Parameter | Type   | Required | Description       |
-|-----------|--------|----------|-------------------|
-| id        | string | true     | User ID           |
-| user      | object | true     | User data (JSON)  |
+### TokenResponse
+- `accessToken`: The access token for authentication.
+- `userId`: The user ID associated with the token.
 
-**Response:**
-
-| Status | Description              |
-|--------|--------------------------|
-| 204    | User successfully updated|
-| 400    | Invalid input            |
-| 404    | User not found           |
-| 500    | Failed to update user    |
-
-#### PATCH /api/users/role/{id}
-
-**Summary:**  
-Update user role.
-
-**Permission:** BearerAuth (Role: Admin)
-
-**Description:**  
-Update the role of a user (Admin, Staff, etc.).
-
-**Request Parameters:**
-
-| Parameter | Type   | Required | Description     |
-|-----------|--------|----------|-----------------|
-| id        | string | true     | User ID         |
-| role      | string | true     | New Role        |
-
-**Response:**
-
-| Status | Description              |
-|--------|--------------------------|
-| 204    | User role successfully updated |
-| 400    | Invalid role             |
-| 404    | User not found           |
-| 500    | Failed to update role    |
-
-#### POST /api/users/qr/{id}
-
-**Summary:**  
-Scan QR code.
-
-**Permission:** BearerAuth (Role: Staff or Admin)
-
-**Description:**  
-Scan a QR code associated with a user by their ID. This is accessible only for staff and admin roles.
-
-**Response:**
-
-| Status | Description              |
-|--------|--------------------------|
-| 200    | QR code scanned          |
-| 404    | User not found           |
-| 500    | Failed to scan QR code   |
-
-#### GET /api/users/qr/{id}
-
-**Summary:**  
-Get QR code URL.
-
-**Permission:** BearerAuth
-
-**Description:**  
-Retrieve the URL for a user's QR code by their ID.
-
-**Response:**
-
-| Status | Description              |
-|--------|--------------------------|
-| 200    | QR code URL              |
-| 404    | User not found           |
-| 500    | Failed to fetch user     |
+### User
+A user object containing:
+- `id`: The user ID.
+- `name`: The user name.
+- `email`: The user email.
+- `phone`: The user phone number.
+- `status`: The user's status.
+- `role`: The user's role.
+- `education`: The user's education status.
+- `imageURL`: The user's profile image URL.
 
 ---
-
-This updated README includes all your routes, their descriptions, and the permissions required for each one. Let me know if you need further changes!
