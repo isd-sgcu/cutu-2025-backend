@@ -2,11 +2,13 @@ package handler
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/isd-sgcu/cutu2025-backend/domain"
 	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
+	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 // UserHandler represents the handler for user-related endpoints
@@ -233,6 +235,38 @@ func (h *UserHandler) UpdateRole(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
+// Change Role godoc
+// @Summary Update user role by ID
+// @Description Update a user by its ID
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @Param user body domain.User true "User data"
+// @Success 204
+// @Failure 400 {object} domain.ErrorResponse "Invalid input"
+// @Failure 401 {object} domain.ErrorResponse "Unauthorized"
+// @Failure 403 {object} domain.ErrorResponse "Forbidden"
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to update user role"
+// @Router /api/users [patch]
+func (h *UserHandler) UpdateMyAccountInfo(c *fiber.Ctx) error {
+	role := new(domain.Role)
+	token := strings.Split(c.Get("Authorization"), "Bearer")
+	id, err := utils.DecodeToken(token[1], utils.GetEnv("SECRET_JWT_KEY", ""))
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(domain.ErrorResponse{Error: "Unauthorized"})
+	}
+
+	if err := c.BodyParser(role); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
+	}
+	if err := h.Usecase.UpdateRole(id, *role); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to update this role user"})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
 // GetQRURL godoc
 // @Summary Get QR code URL
 // @Description Retrieve a QR code URL for a user
@@ -249,4 +283,24 @@ func (h *UserHandler) GetQRURL(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
 	}
 	return c.Status(fiber.StatusOK).JSON(domain.QrResponse{QrURL: qrURL})
+}
+
+// Delete godoc
+// @Summary Delete user by ID
+// @Description Delete a user by its ID
+// @Produce  json
+// @Security BearerAuth
+// @Param id path string true "User ID"
+// @Success 204
+// @Failure 401 {object} domain.ErrorResponse "Unauthorized"
+// @Failure 403 {object} domain.ErrorResponse "Forbidden"
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to delete user"
+// @Router /api/users/{id} [delete]
+func (h *UserHandler) Delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	if err := h.Usecase.Delete(id); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to delete user"})
+	}
+	return c.SendStatus(fiber.StatusNoContent)
 }

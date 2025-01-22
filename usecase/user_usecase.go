@@ -16,6 +16,7 @@ type UserRepositoryInterface interface {
 	GetAll() ([]domain.User, error)
 	GetById(id string) (domain.User, error)
 	Update(id string, user *domain.User) error
+	Delete(id string) error
 }
 
 func NewUserUsecase(repo UserRepositoryInterface) *UserUsecase {
@@ -122,4 +123,9 @@ func (u *UserUsecase) GetQRURL(id string) (string, error) {
 		return "", err
 	}
 	return fmt.Sprintf("http://localhost:4000/api/users/qr/%s", user.ID), nil
+}
+
+// Delete user
+func (u *UserUsecase) Delete(id string) error {
+	return u.Repo.Delete(id)
 }

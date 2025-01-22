@@ -33,3 +33,8 @@ func (r *UserRepository) Update(id string, user *domain.User) error {
 	err := r.DB.Model(&domain.User{}).Where("id = ?", id).Updates(user).Error
 	return err
 }
+
+func (r *UserRepository) Delete(id string) error {
+	err := r.DB.Where("id = ?", id).Delete(&domain.User{}).Error
+	return err
+}
