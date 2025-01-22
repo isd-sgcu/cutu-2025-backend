@@ -5,10 +5,12 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/isd-sgcu/cutu2025-backend/domain"
+	"github.com/isd-sgcu/cutu2025-backend/usecase"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
-func RoleMiddleware(allowedRoles ...string) fiber.Handler {
+func RoleMiddleware(u *usecase.UserUsecase, allowedRoles ...domain.Role) fiber.Handler {
 	var secretKey = utils.GetEnv("SECRET_JWT_KEY", "")
 	return func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")
@@ -33,10 +35,16 @@ func RoleMiddleware(allowedRoles ...string) fiber.Handler {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Invalid token claims"})
 		}
 
-		role, ok := claims["role"].(string)
+		id, ok := claims["userId"].(string)
 		if !ok {
-			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "Role claim not found"})
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "ID claim not found"})
 		}
+
+		user, err := u.GetById(id)
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "User not found"})
+		}
+		role := user.Role
 
 		for _, allowedRole := range allowedRoles {
 			if role == allowedRole {

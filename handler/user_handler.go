@@ -34,8 +34,11 @@ func NewUserHandler(usecase *usecase.UserUsecase, s3Service *infrastructure.S3Cl
 // @Param sizeJersey formData string true "Jersey Size"
 // @Param foodLimitation formData string false "Food Limitation"
 // @Param invitationCode formData string false "Invitation Code"
-// @Param state formData string true "User State"
+// @Param status formData domain.Status true "User Status"
 // @Param image formData file true "User Image"
+// @Param graduatedYear formData string false "Graduated Year"
+// @Param faculty formData string false "Faculty"
+// @Param education formData domain.Education true "Education"
 // @Success 201 {object} domain.TokenResponse
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
@@ -94,8 +97,21 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 			}
 			return nil
 		}(),
-		State:    form.Value["state"][0],
-		ImageURL: "https://picsum.photos/id/237/200/300", //TODO: Waiting for S3
+		Status: domain.StatusAlumni,
+		GraduatedYear: func() *string {
+			if v := form.Value["graduatedYear"]; len(v) > 0 {
+				return &v[0]
+			}
+			return nil
+		}(),
+		Faculty: func() *string {
+			if v := form.Value["faculty"]; len(v) > 0 {
+				return &v[0]
+			}
+			return nil
+		}(),
+		Education: domain.Education(form.Value["education"][0]),
+		ImageURL:  "https://picsum.photos/id/237/200/300", //TODO: Waiting for S3
 	}
 
 	// Register user
@@ -169,22 +185,68 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 }
 
 // GetById godoc
-// @Summary Get user by ID
+// @Summary Scan QR code
 // @Description Retrieve a user by its ID
 // @Produce  json
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.User
 // @Failure 404 {object} domain.ErrorResponse "User not found"
 // @Failure 500 {object} domain.ErrorResponse "Failed to fetch user"
-// @Router /api/users/qr/{id} [get]
+// @Router /api/users/qr/{id} [post]
 func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 	id := c.Params("id")
-	err := h.Usecase.ScanQR(id)
+	user, err := h.Usecase.ScanQR(id)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserAlreadyEntered) {
 			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered"})
 		}
 		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
 	}
-	return c.Status(fiber.StatusOK).JSON("Scan Qr success")
+	return c.Status(fiber.StatusOK).JSON(user)
+}
+
+// Change Role godoc
+// @Summary Update user role by ID
+// @Description Update a user by its ID
+// @Accept  json
+// @Produce  json
+// @Security BearerAuth
+// @Param id path string true "User ID"
+// @Param role body domain.Role true "User Role"
+// @Success 204
+// @Failure 400 {object} domain.ErrorResponse "Invalid input"
+// @Failure 401 {object} domain.ErrorResponse "Unauthorized"
+// @Failure 403 {object} domain.ErrorResponse "Forbidden"
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to update user role"
+// @Router /api/users/role/{id} [patch]
+func (h *UserHandler) UpdateRole(c *fiber.Ctx) error {
+	id := c.Params("id")
+	role := new(domain.Role)
+	if err := c.BodyParser(role); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
+	}
+	if err := h.Usecase.UpdateRole(id, *role); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to update this role user"})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// GetQRURL godoc
+// @Summary Get QR code URL
+// @Description Retrieve a QR code URL for a user
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} domain.QrResponse
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to fetch user"
+// @Router /api/users/qr/{id} [get]
+func (h *UserHandler) GetQRURL(c *fiber.Ctx) error {
+	id := c.Params("id")
+	qrURL, err := h.Usecase.GetQRURL(id)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON(domain.QrResponse{QrURL: qrURL})
 }

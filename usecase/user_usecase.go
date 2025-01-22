@@ -25,12 +25,23 @@ func NewUserUsecase(repo UserRepositoryInterface) *UserUsecase {
 // assing role based on phone number
 func (u *UserUsecase) assignRole(user *domain.User) {
 	// mock phone number
-	staff_phones := []string{"06", "08", "09"}
-	user.Role = domain.Student
+	staffPhones := []string{"06", "08", "09"}
+	adminPhones := []string{"00", "07"}
+	user.Role = domain.Student // Default role is Student
+
+	// Check if the user's phone number matches the staff numbers
 	if user.Phone != "" {
-		for _, phone := range staff_phones {
+		for _, phone := range staffPhones {
 			if user.Phone == phone {
 				user.Role = domain.Staff
+				break
+			}
+		}
+
+		// Check if the user's phone number matches the admin numbers
+		for _, phone := range adminPhones {
+			if user.Phone == phone {
+				user.Role = domain.Admin // Set role to Admin
 				break
 			}
 		}
@@ -47,16 +58,14 @@ func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) 
 
 	// Generate access and refresh tokens
 	jwtSecret := utils.GetEnv("SECRET_JWT_KEY", "")
-	accessToken, refreshToken, err := utils.GenerateTokens(user.ID, string(user.Role), jwtSecret)
+	accessToken, err := utils.GenerateTokens(user.ID, jwtSecret)
 	if err != nil {
 		return domain.TokenResponse{}, err
 	}
 
 	return domain.TokenResponse{
-		UserID:       user.ID,
-		QrURL:        fmt.Sprintf("http://localhost:4000/api/users/qr/%s", user.ID),
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		UserID:      user.ID,
+		AccessToken: accessToken,
 	}, nil
 }
 
@@ -77,20 +86,40 @@ func (u *UserUsecase) Update(id string, updatedUser *domain.User) error {
 }
 
 // adjust IsEntered from False to True for scanning qrcode
-func (u *UserUsecase) ScanQR(id string) error {
+func (u *UserUsecase) ScanQR(id string) (domain.User, error) {
 	user, err := u.Repo.GetById(id)
 	if err != nil {
-		return err
+		return domain.User{}, err
 	}
-	
+
 	// Return early if the user has already entered
 	if user.IsEntered {
-		return domain.ErrUserAlreadyEntered
+		return domain.User{}, domain.ErrUserAlreadyEntered
 	}
 
 	// Update only the necessary field instead of creating a new object
 	user.IsEntered = true
 
+	err = u.Repo.Update(id, &user)
+
+	return user, err
+}
+
+// adjust role
+func (u *UserUsecase) UpdateRole(id string, role domain.Role) error {
+	user, err := u.Repo.GetById(id)
+	if err != nil {
+		return err
+	}
+	user.Role = role
 	return u.Repo.Update(id, &user)
 }
 
+// Get QR code URL
+func (u *UserUsecase) GetQRURL(id string) (string, error) {
+	user, err := u.Repo.GetById(id)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("http://localhost:4000/api/users/qr/%s", user.ID), nil
+}

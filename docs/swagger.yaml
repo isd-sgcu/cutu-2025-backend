@@ -1,25 +1,62 @@
 definitions:
+  domain.Education:
+    enum:
+    - studying
+    - graduated
+    type: string
+    x-enum-varnames:
+    - EducationStudying
+    - EducationGraduated
   domain.ErrorResponse:
     properties:
       error:
         type: string
     type: object
+  domain.QrResponse:
+    properties:
+      qrUrl:
+        type: string
+      userId:
+        type: string
+    type: object
+  domain.Role:
+    enum:
+    - student
+    - staff
+    - admin
+    type: string
+    x-enum-varnames:
+    - Student
+    - Staff
+    - Admin
+  domain.Status:
+    enum:
+    - student
+    - alumni
+    - general_public
+    type: string
+    x-enum-varnames:
+    - StatusStudent
+    - StatusAlumni
+    - StatusGeneralPublic
   domain.TokenResponse:
     properties:
       accessToken:
-        type: string
-      qrUrl:
-        type: string
-      refreshToken:
         type: string
       userId:
         type: string
     type: object
   domain.User:
     properties:
+      education:
+        $ref: '#/definitions/domain.Education'
       email:
         type: string
+      faculty:
+        type: string
       foodLimitation:
+        type: string
+      graduatedYear:
         type: string
       id:
         type: string
@@ -33,10 +70,12 @@ definitions:
         type: string
       phone:
         type: string
+      role:
+        $ref: '#/definitions/domain.Role'
       sizeJersey:
         type: string
-      state:
-        type: string
+      status:
+        $ref: '#/definitions/domain.Status'
       university:
         type: string
     type: object
@@ -114,6 +153,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
         "404":
           description: User not found
           schema:
@@ -127,6 +170,30 @@ paths:
       summary: Update user by ID
   /api/users/qr/{id}:
     get:
+      description: Retrieve a QR code URL for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.QrResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Failed to fetch user
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Get QR code URL
+    post:
       description: Retrieve a user by its ID
       parameters:
       - description: User ID
@@ -149,13 +216,18 @@ paths:
           description: Failed to fetch user
           schema:
             $ref: '#/definitions/domain.ErrorResponse'
-      summary: Get user by ID
+      summary: Scan QR code
   /api/users/register:
     post:
       consumes:
       - multipart/form-data
       description: Register a new user in the system
       parameters:
+      - description: User ID
+        in: formData
+        name: id
+        required: true
+        type: string
       - description: User Name
         in: formData
         name: name
@@ -189,9 +261,13 @@ paths:
         in: formData
         name: invitationCode
         type: string
-      - description: User State
+      - description: User Status
+        enum:
+        - student
+        - alumni
+        - general_public
         in: formData
-        name: state
+        name: status
         required: true
         type: string
       - description: User Image
@@ -199,6 +275,22 @@ paths:
         name: image
         required: true
         type: file
+      - description: Graduated Year
+        in: formData
+        name: graduatedYear
+        type: string
+      - description: Faculty
+        in: formData
+        name: faculty
+        type: string
+      - description: Education
+        enum:
+        - studying
+        - graduated
+        in: formData
+        name: education
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -221,4 +313,49 @@ paths:
       security:
       - BearerAuth: []
       summary: Register a new user
+  /api/users/role/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update a user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User Role
+        in: body
+        name: role
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Invalid input
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Failed to update user role
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Update user role by ID
 swagger: "2.0"

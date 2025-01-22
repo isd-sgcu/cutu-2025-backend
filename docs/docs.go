@@ -43,11 +43,47 @@ const docTemplate = `{
         },
         "/api/users/qr/{id}": {
             "get": {
+                "description": "Retrieve a QR code URL for a user",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get QR code URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.QrResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch user",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
                 "description": "Retrieve a user by its ID",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Scan QR code",
                 "parameters": [
                     {
                         "type": "string",
@@ -97,6 +133,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "User Name",
                         "name": "name",
                         "in": "formData",
@@ -143,9 +186,14 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
+                        "enum": [
+                            "student",
+                            "alumni",
+                            "general_public"
+                        ],
                         "type": "string",
-                        "description": "User State",
-                        "name": "state",
+                        "description": "User Status",
+                        "name": "status",
                         "in": "formData",
                         "required": true
                     },
@@ -153,6 +201,29 @@ const docTemplate = `{
                         "type": "file",
                         "description": "User Image",
                         "name": "image",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Graduated Year",
+                        "name": "graduatedYear",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Faculty",
+                        "name": "faculty",
+                        "in": "formData"
+                    },
+                    {
+                        "enum": [
+                            "studying",
+                            "graduated"
+                        ],
+                        "type": "string",
+                        "description": "Education",
+                        "name": "education",
                         "in": "formData",
                         "required": true
                     }
@@ -178,6 +249,76 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to create user",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/role/{id}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Update a user by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update user role by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User Role",
+                        "name": "role",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Invalid input",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to update user role",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
@@ -270,6 +411,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
                     },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
                     "404": {
                         "description": "User not found",
                         "schema": {
@@ -287,6 +434,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "domain.Education": {
+            "type": "string",
+            "enum": [
+                "studying",
+                "graduated"
+            ],
+            "x-enum-varnames": [
+                "EducationStudying",
+                "EducationGraduated"
+            ]
+        },
         "domain.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -295,16 +453,47 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.QrResponse": {
+            "type": "object",
+            "properties": {
+                "qrUrl": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Role": {
+            "type": "string",
+            "enum": [
+                "student",
+                "staff",
+                "admin"
+            ],
+            "x-enum-varnames": [
+                "Student",
+                "Staff",
+                "Admin"
+            ]
+        },
+        "domain.Status": {
+            "type": "string",
+            "enum": [
+                "student",
+                "alumni",
+                "general_public"
+            ],
+            "x-enum-varnames": [
+                "StatusStudent",
+                "StatusAlumni",
+                "StatusGeneralPublic"
+            ]
+        },
         "domain.TokenResponse": {
             "type": "object",
             "properties": {
                 "accessToken": {
-                    "type": "string"
-                },
-                "qrUrl": {
-                    "type": "string"
-                },
-                "refreshToken": {
                     "type": "string"
                 },
                 "userId": {
@@ -315,10 +504,19 @@ const docTemplate = `{
         "domain.User": {
             "type": "object",
             "properties": {
+                "education": {
+                    "$ref": "#/definitions/domain.Education"
+                },
                 "email": {
                     "type": "string"
                 },
+                "faculty": {
+                    "type": "string"
+                },
                 "foodLimitation": {
+                    "type": "string"
+                },
+                "graduatedYear": {
                     "type": "string"
                 },
                 "id": {
@@ -339,11 +537,14 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
+                "role": {
+                    "$ref": "#/definitions/domain.Role"
+                },
                 "sizeJersey": {
                     "type": "string"
                 },
-                "state": {
-                    "type": "string"
+                "status": {
+                    "$ref": "#/definitions/domain.Status"
                 },
                 "university": {
                     "type": "string"
