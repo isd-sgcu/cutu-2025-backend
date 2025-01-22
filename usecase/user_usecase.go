@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/isd-sgcu/cutu2025-backend/domain"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
@@ -49,8 +50,14 @@ func (u *UserUsecase) assignRole(user *domain.User) {
 	}
 }
 
+// Check Scanning is same day
+func isSameDay(t1, t2 time.Time) bool {
+	y1, m1, d1 := t1.Date()
+	y2, m2, d2 := t2.Date()
+	return y1 == y2 && m1 == m2 && d1 == d2
+}
+
 func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) {
-	user.IsEntered = false
 	u.assignRole(user)
 	// Save user in the repository
 	if err := u.Repo.Create(user); err != nil {
@@ -78,6 +85,24 @@ func (u *UserUsecase) GetById(id string) (domain.User, error) {
 	return u.Repo.GetById(id)
 }
 
+func (u *UserUsecase) SignIn(id string) (domain.TokenResponse, error) {
+	user, err := u.Repo.GetById(id)
+	if err != nil {
+		return domain.TokenResponse{}, err
+	}
+
+	jwtSecret := utils.GetEnv("SECRET_JWT_KEY", "")
+	accessToken, err := utils.GenerateTokens(user.ID, jwtSecret)
+	if err != nil {
+		return domain.TokenResponse{}, err
+	}
+
+	return domain.TokenResponse{
+		UserID:      user.ID,
+		AccessToken: accessToken,
+	}, nil
+}
+
 func (u *UserUsecase) Update(id string, updatedUser *domain.User) error {
 	_, err := u.Repo.GetById(id)
 	if err != nil {
@@ -93,14 +118,14 @@ func (u *UserUsecase) ScanQR(id string) (domain.User, error) {
 		return domain.User{}, err
 	}
 
-	// Return early if the user has already entered
-	if user.IsEntered {
+	now := time.Now()
+	// Check if the user has already entered today
+	if user.LastEntered != nil && isSameDay(*user.LastEntered, now) {
 		return domain.User{}, domain.ErrUserAlreadyEntered
 	}
 
-	// Update only the necessary field instead of creating a new object
-	user.IsEntered = true
-
+	// Update the last entry timestamp
+	user.LastEntered = &now
 	err = u.Repo.Update(id, &user)
 
 	return user, err

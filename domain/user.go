@@ -1,13 +1,15 @@
 package domain
 
+import "time"
+
 type Role string
 type Status string
 type Education string
 
 const (
 	Member Role = "member"
-	Staff   Role = "staff"
-	Admin   Role = "admin"
+	Staff  Role = "staff"
+	Admin  Role = "admin"
 )
 
 const (
@@ -22,7 +24,7 @@ const (
 )
 
 type User struct {
-	ID             string     `gorm:"primaryKey"`
+	ID             string `gorm:"primaryKey"`
 	Name           string
 	Email          string
 	Phone          string
@@ -34,7 +36,7 @@ type User struct {
 	GraduatedYear  *string
 	Faculty        *string
 	ImageURL       string
-	IsEntered      bool
+	LastEntered    *time.Time // Timestamp for the last QR scan
 	Role           Role
 	Education      Education
 }

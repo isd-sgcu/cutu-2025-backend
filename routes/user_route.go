@@ -14,6 +14,8 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 
 	api := app.Group("/api/users")
 
+	app.Post("/signin", middleware.AuthMiddleware(userUsecase), userHandler.Signin)
+
 	api.Get("/",
 		middleware.RoleMiddleware(
 			userUsecase,
@@ -22,7 +24,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 		),
 		userHandler.GetAll)
 
-	api.Get("/:id", middleware.AuthMiddleware(), userHandler.GetById)
+	api.Get("/:id", middleware.AuthMiddleware(userUsecase), userHandler.GetById)
 
 	api.Post("/qr/:id", middleware.RoleMiddleware(
 		userUsecase,
@@ -31,7 +33,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 	),
 		userHandler.ScanQR)
 
-	api.Get("/qr/:id", middleware.AuthMiddleware(), userHandler.GetQRURL)
+	api.Get("/qr/:id", middleware.AuthMiddleware(userUsecase), userHandler.GetQRURL)
 
 	api.Post("/register", userHandler.Register)
 
@@ -40,7 +42,8 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 		domain.Admin,
 	),
 		userHandler.Update)
-	api.Patch("/", middleware.AuthMiddleware(), userHandler.UpdateMyAccountInfo)
+
+	api.Patch("/", middleware.AuthMiddleware(userUsecase), userHandler.UpdateMyAccountInfo)
 	api.Delete("/:id", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.Delete)
 	api.Patch("/role/:id", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.UpdateRole)
 }

@@ -193,7 +193,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.User
 // @Failure 404 {object} domain.ErrorResponse "User not found"
-// @Failure 500 {object} domain.ErrorResponse "Failed to fetch user"
+// @Failure 400 {object} domain.ErrorResponse "User has already entered"
 // @Router /api/users/qr/{id} [post]
 func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 	id := c.Params("id")
@@ -202,7 +202,7 @@ func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 		if errors.Is(err, domain.ErrUserAlreadyEntered) {
 			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered"})
 		}
-		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "User not found"})
 	}
 	return c.Status(fiber.StatusOK).JSON(user)
 }
@@ -303,4 +303,28 @@ func (h *UserHandler) Delete(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to delete user"})
 	}
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// Signin godoc
+// @Summary Signin
+// @Description Signin
+// @Produce  json
+// @Param id body string true "User ID"
+// @Success 200 {object} domain.TokenResponse
+// @Failure 400 {object} domain.ErrorResponse "Invalid input"
+// @Failure 401 {object} domain.ErrorResponse "Unauthorized"
+// @Failure 500 {object} domain.ErrorResponse "Failed to signin"
+// @Router /api/users/signin [post]
+func (h *UserHandler) Signin(c *fiber.Ctx) error {
+	id := new(string)
+	if err := c.BodyParser(id); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
+	}
+
+	tokenResponse, err := h.Usecase.SignIn(*id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to signin"})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(tokenResponse)
 }
