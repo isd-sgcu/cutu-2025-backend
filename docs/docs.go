@@ -41,6 +41,44 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users/qr/{id}": {
+            "get": {
+                "description": "Retrieve a user by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch user",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/register": {
             "post": {
                 "security": [
@@ -50,7 +88,7 @@ const docTemplate = `{
                 ],
                 "description": "Register a new user in the system",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -58,13 +96,65 @@ const docTemplate = `{
                 "summary": "Register a new user",
                 "parameters": [
                     {
-                        "description": "User data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
+                        "type": "string",
+                        "description": "User Name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User Email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User Phone",
+                        "name": "phone",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User University",
+                        "name": "university",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Jersey Size",
+                        "name": "sizeJersey",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Food Limitation",
+                        "name": "foodLimitation",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Invitation Code",
+                        "name": "invitationCode",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "User State",
+                        "name": "state",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "User Image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -211,6 +301,9 @@ const docTemplate = `{
                 "accessToken": {
                     "type": "string"
                 },
+                "qrUrl": {
+                    "type": "string"
+                },
                 "refreshToken": {
                     "type": "string"
                 },
@@ -236,6 +329,9 @@ const docTemplate = `{
                 },
                 "invitationCode": {
                     "type": "string"
+                },
+                "isEntered": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"

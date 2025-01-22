@@ -23,6 +23,12 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 
 	api.Get("/:id", middleware.AuthMiddleware(), userHandler.GetById)
 
+	api.Get("/qr/:id", middleware.RoleMiddleware(
+		string(domain.Staff),
+		string(domain.Admin),
+	),
+		userHandler.ScanQR)
+
 	api.Post("/register", userHandler.Register)
 
 	api.Patch("/:id", middleware.RoleMiddleware(

@@ -38,6 +38,7 @@ func (u *UserUsecase) assignRole(user *domain.User) {
 }
 
 func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) {
+	user.IsEntered = false
 	u.assignRole(user)
 	// Save user in the repository
 	if err := u.Repo.Create(user); err != nil {
@@ -74,3 +75,22 @@ func (u *UserUsecase) Update(id string, updatedUser *domain.User) error {
 	}
 	return u.Repo.Update(id, updatedUser)
 }
+
+// adjust IsEntered from False to True for scanning qrcode
+func (u *UserUsecase) ScanQR(id string) error {
+	user, err := u.Repo.GetById(id)
+	if err != nil {
+		return err
+	}
+	
+	// Return early if the user has already entered
+	if user.IsEntered {
+		return domain.ErrUserAlreadyEntered
+	}
+
+	// Update only the necessary field instead of creating a new object
+	user.IsEntered = true
+
+	return u.Repo.Update(id, &user)
+}
+

@@ -19,5 +19,6 @@ type User struct {
 	InvitationCode *string
 	State          string
 	ImageURL       string
+	IsEntered	   bool
 	Role           Role `json:"-"` // exclude from JSON
 }

@@ -1,15 +1,12 @@
 package handler
 
 import (
-	"bytes"
-	"fmt"
-	"io"
+	"errors"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/isd-sgcu/cutu2025-backend/domain"
 	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
-	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 // UserHandler represents the handler for user-related endpoints
@@ -29,6 +26,7 @@ func NewUserHandler(usecase *usecase.UserUsecase, s3Service *infrastructure.S3Cl
 // @Accept  multipart/form-data
 // @Produce  json
 // @Security BearerAuth
+// @Param id formData string true "User ID"
 // @Param name formData string true "User Name"
 // @Param email formData string true "User Email"
 // @Param phone formData string true "User Phone"
@@ -66,23 +64,24 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	defer file.Close()
 
 	// Convert the file stream to a byte slice
-	fileBytes, err := io.ReadAll(file)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
-	}
-
-	// Convert byte slice to bytes.Reader for UploadFile method
-	fileReader := bytes.NewReader(fileBytes)
+	// ! Cant use S3 for now
+	// fileBytes, err := io.ReadAll(file)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
+	// }
 
 	// Upload the file using the existing UploadFile method
-	s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
-	s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
-	}
+	// ! Cant use S3 for now
+	// fileReader := bytes.NewReader(fileBytes)
+	// s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
+	// s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
+	// if err != nil {
+	// 	return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
+	// }
 
 	// Map form values to user object
 	user := &domain.User{
+		ID:             form.Value["id"][0],
 		Name:           form.Value["name"][0],
 		Email:          form.Value["email"][0],
 		Phone:          form.Value["phone"][0],
@@ -96,7 +95,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 			return nil
 		}(),
 		State:    form.Value["state"][0],
-		ImageURL: s3URL,
+		ImageURL: "https://picsum.photos/id/237/200/300", //TODO: Waiting for S3
 	}
 
 	// Register user
@@ -152,6 +151,7 @@ func (h *UserHandler) GetById(c *fiber.Ctx) error {
 // @Success 204
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
+// @Failure 403 {object} domain.ErrorResponse "Forbidden"
 // @Failure 404 {object} domain.ErrorResponse "User not found"
 // @Failure 500 {object} domain.ErrorResponse "Failed to update user"
 // @Router /api/users/{id} [patch]
@@ -166,4 +166,25 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// GetById godoc
+// @Summary Get user by ID
+// @Description Retrieve a user by its ID
+// @Produce  json
+// @Param id path string true "User ID"
+// @Success 200 {object} domain.User
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to fetch user"
+// @Router /api/users/qr/{id} [get]
+func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
+	id := c.Params("id")
+	err := h.Usecase.ScanQR(id)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserAlreadyEntered) {
+			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered"})
+		}
+		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON("Scan Qr success")
 }
