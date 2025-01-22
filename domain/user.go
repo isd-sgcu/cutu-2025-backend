@@ -5,7 +5,7 @@ type Status string
 type Education string
 
 const (
-	Student Role = "student"
+	Member Role = "member"
 	Staff   Role = "staff"
 	Admin   Role = "admin"
 )
