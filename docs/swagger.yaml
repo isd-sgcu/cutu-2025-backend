@@ -21,12 +21,12 @@ definitions:
     type: object
   domain.Role:
     enum:
-    - student
+    - member
     - staff
     - admin
     type: string
     x-enum-varnames:
-    - Student
+    - Member
     - Staff
     - Admin
   domain.Status:

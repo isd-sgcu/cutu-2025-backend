@@ -467,12 +467,12 @@ const docTemplate = `{
         "domain.Role": {
             "type": "string",
             "enum": [
-                "student",
+                "member",
                 "staff",
                 "admin"
             ],
             "x-enum-varnames": [
-                "Student",
+                "Member",
                 "Staff",
                 "Admin"
             ]
