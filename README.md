@@ -85,6 +85,8 @@ This API provides endpoints for managing users in the system, including retrievi
 **Endpoint:** `/api/users`  
 **Method:** `GET`
 
+**Permission:** BearerAuth (Staff, Admin)
+
 Retrieve a list of all users.
 
 **Response:**
@@ -95,6 +97,8 @@ Retrieve a list of all users.
 
 **Endpoint:** `/api/users/{id}`  
 **Method:** `GET`
+
+**Permission:** BearerAuth
 
 Retrieve a user by its ID.
 
@@ -110,6 +114,9 @@ Retrieve a user by its ID.
 
 **Endpoint:** `/api/users/register`  
 **Method:** `POST`
+
+**Permission:** No
+
 
 Register a new user in the system.
 
@@ -139,6 +146,8 @@ Register a new user in the system.
 **Endpoint:** `/api/users/{id}`  
 **Method:** `PATCH`
 
+**Permission:** BearerAuth (Admin)
+
 Update a user by its ID.
 
 **Parameters:**
@@ -158,6 +167,8 @@ Update a user by its ID.
 **Endpoint:** `/api/users/qr/{id}`  
 **Method:** `GET`
 
+**Permission:** BearerAuth 
+
 Retrieve a QR code URL for a user.
 
 **Parameters:**
@@ -172,6 +183,8 @@ Retrieve a QR code URL for a user.
 
 **Endpoint:** `/api/users/qr/{id}`  
 **Method:** `POST`
+
+**Permission:** BearerAuth (Staff, Admin)
 
 Scan a QR code and perform associated actions.
 
@@ -188,11 +201,53 @@ Scan a QR code and perform associated actions.
 **Endpoint:** `/api/users/role/{id}`  
 **Method:** `PATCH`
 
+**Permission:** BearerAuth (Admin)
+
 Update a user role by its ID.
 
 **Parameters:**
 - `id` (path) - The ID of the user.
 - `role` (body) - User role (string).
+
+**Response:**
+- `204 No Content`: User role updated successfully.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user role.
+
+### 8. Update Staff Info
+
+**Endpoint:** `/api/users/`  
+**Method:** `PATCH`
+
+Update a staff role by its credentials.
+
+**Parameters:**
+- `user` (body) - User data (JSON).
+
+**Permission:** BearerAuth
+
+**Response:**
+- `204 No Content`: User role updated successfully.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user role.
+
+### 9. Remove Account
+
+**Endpoint:** `/api/users/{id}`  
+**Method:** `DELETE`
+
+Update a staff role by its credentials.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Permission:** BearerAuth(Admin)
 
 **Response:**
 - `204 No Content`: User role updated successfully.
