@@ -14,7 +14,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 
 	api := app.Group("/api/users")
 
-	app.Post("/signin", middleware.AuthMiddleware(userUsecase), userHandler.Signin)
+	app.Post("/signin", middleware.AuthMiddleware(userUsecase), userHandler.SignIn)
 
 	api.Get("/",
 		middleware.RoleMiddleware(

@@ -17,6 +17,11 @@ const docTemplate = `{
     "paths": {
         "/api/users": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a list of all users",
                 "produces": [
                     "application/json"
@@ -41,6 +46,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update a user by its ID",
                 "consumes": [
                     "application/json"
@@ -49,6 +59,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "summary": "Update user role by ID",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -88,6 +109,11 @@ const docTemplate = `{
         },
         "/api/users/qr/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a QR code URL for a user",
                 "produces": [
                     "application/json"
@@ -124,6 +150,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a user by its ID",
                 "produces": [
                     "application/json"
@@ -298,6 +329,14 @@ const docTemplate = `{
         },
         "/api/users/role/{id}": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    },
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update a user by its ID",
                 "consumes": [
                     "application/json"
@@ -307,6 +346,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update user role by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "User Role",
                         "name": "role",
@@ -402,6 +448,11 @@ const docTemplate = `{
         },
         "/api/users/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Retrieve a user by its ID",
                 "produces": [
                     "application/json"
@@ -438,11 +489,25 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Delete a user by its ID",
                 "produces": [
                     "application/json"
                 ],
                 "summary": "Delete user by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -474,6 +539,11 @@ const docTemplate = `{
                 }
             },
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Update a user by its ID",
                 "consumes": [
                     "application/json"
@@ -483,6 +553,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update user by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "User data",
                         "name": "user",

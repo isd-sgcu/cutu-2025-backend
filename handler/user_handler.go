@@ -127,10 +127,8 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 // GetAll godoc
 // @Summary Get all users
 // @Description Retrieve a list of all users
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 // @Produce  json
+// @security BearerAuth
 // @Success 200 {array} domain.User
 // @Failure 500 {object} domain.ErrorResponse "Failed to fetch users"
 // @Router /api/users [get]
@@ -145,10 +143,8 @@ func (h *UserHandler) GetAll(c *fiber.Ctx) error {
 // GetById godoc
 // @Summary Get user by ID
 // @Description Retrieve a user by its ID
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 // @Produce  json
+// @security BearerAuth
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.User
 // @Failure 404 {object} domain.ErrorResponse "User not found"
@@ -168,9 +164,8 @@ func (h *UserHandler) GetById(c *fiber.Ctx) error {
 // @Description Update a user by its ID
 // @Accept  json
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization// @Param id path string true "User ID"
+// @security BearerAuth
+// @Param id path string true "User ID"
 // @Param user body domain.User true "User data"
 // @Success 204
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
@@ -192,13 +187,11 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// ScanQR godoc
+// Scan QR godoc
 // @Summary Scan QR code
 // @Description Retrieve a user by its ID
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
+// @security BearerAuth
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.User
 // @Failure 404 {object} domain.ErrorResponse "User not found"
@@ -220,10 +213,10 @@ func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 // @Summary Update user role by ID
 // @Description Update a user by its ID
 // @Accept  json
+// @security BearerAuth
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization// @Param id path string true "User ID"
+// @Security BearerAuth
+// @Param id path string true "User ID"
 // @Param role body domain.Role true "User Role"
 // @Success 204
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
@@ -250,9 +243,8 @@ func (h *UserHandler) UpdateRole(c *fiber.Ctx) error {
 // @Description Update a user by its ID
 // @Accept  json
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization// @Param user body domain.User true "User data"
+// @security BearerAuth
+// @Param user body domain.User true "User data"
 // @Success 204
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
@@ -282,9 +274,7 @@ func (h *UserHandler) UpdateMyAccountInfo(c *fiber.Ctx) error {
 // @Summary Get QR code URL
 // @Description Retrieve a QR code URL for a user
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
+// @security BearerAuth
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.QrResponse
 // @Failure 404 {object} domain.ErrorResponse "User not found"
@@ -303,9 +293,8 @@ func (h *UserHandler) GetQRURL(c *fiber.Ctx) error {
 // @Summary Delete user by ID
 // @Description Delete a user by its ID
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization// @Param id path string true "User ID"
+// @security BearerAuth
+// @Param id path string true "User ID"
 // @Success 204
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
 // @Failure 403 {object} domain.ErrorResponse "Forbidden"
@@ -320,20 +309,17 @@ func (h *UserHandler) Delete(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// Signin godoc
-// @Summary Signin
-// @Description Signin
+// SignIn godoc
+// @Summary SignIn
+// @Description SignIn
 // @Produce  json
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
 // @Param id body string true "User ID"
 // @Success 200 {object} domain.TokenResponse
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
 // @Failure 500 {object} domain.ErrorResponse "Failed to signin"
 // @Router /api/users/signin [post]
-func (h *UserHandler) Signin(c *fiber.Ctx) error {
+func (h *UserHandler) SignIn(c *fiber.Ctx) error {
 	id := new(string)
 	if err := c.BodyParser(id); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
