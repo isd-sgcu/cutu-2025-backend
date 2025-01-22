@@ -27,7 +27,7 @@ func (u *UserUsecase) assignRole(user *domain.User) {
 	// mock phone number
 	staffPhones := []string{"06", "08", "09"}
 	adminPhones := []string{"00", "07"}
-	user.Role = domain.Member // Default role is Student
+	user.Role = domain.Member // Default role is Member
 
 	// Check if the user's phone number matches the staff numbers
 	if user.Phone != "" {
