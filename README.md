@@ -242,7 +242,7 @@ Update a staff role by its credentials.
 **Endpoint:** `/api/users/{id}`  
 **Method:** `DELETE`
 
-Update a staff role by its credentials.
+Delete account
 
 **Parameters:**
 - `id` (path) - The ID of the user.
