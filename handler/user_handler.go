@@ -238,8 +238,8 @@ func (h *UserHandler) UpdateRole(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// Change Role godoc
-// @Summary Update user role by ID
+// Update account info godoc
+// @Summary Update Account Info
 // @Description Update a user by its ID
 // @Accept  json
 // @Produce  json
@@ -253,17 +253,21 @@ func (h *UserHandler) UpdateRole(c *fiber.Ctx) error {
 // @Failure 500 {object} domain.ErrorResponse "Failed to update user role"
 // @Router /api/users [patch]
 func (h *UserHandler) UpdateMyAccountInfo(c *fiber.Ctx) error {
-	role := new(domain.Role)
-	token := strings.Split(c.Get("Authorization"), "Bearer")
-	id, err := utils.DecodeToken(token[1], utils.GetEnv("SECRET_JWT_KEY", ""))
-	if err != nil {
+	user := new(domain.User)
+	tokenHeader := c.Get("Authorization")
+	if !strings.HasPrefix(tokenHeader, "Bearer ") {
 		return c.Status(fiber.StatusUnauthorized).JSON(domain.ErrorResponse{Error: "Unauthorized"})
 	}
+	token := strings.TrimPrefix(tokenHeader, "Bearer ")
 
-	if err := c.BodyParser(role); err != nil {
+	id, err := utils.DecodeToken(token, utils.GetEnv("SECRET_JWT_KEY", ""))
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(domain.ErrorResponse{Error: "Unauthorized " + err.Error()})
+	}
+	if err := c.BodyParser(user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
 	}
-	if err := h.Usecase.UpdateRole(id, *role); err != nil {
+	if err := h.Usecase.Update(id, user); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to update this role user"})
 	}
 

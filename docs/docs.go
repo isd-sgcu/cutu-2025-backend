@@ -58,7 +58,7 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Update user role by ID",
+                "summary": "Update Account Info",
                 "parameters": [
                     {
                         "description": "User data",
@@ -402,11 +402,11 @@ const docTemplate = `{
         },
         "/api/users/signin": {
             "post": {
-                "description": "Signin",
+                "description": "SignIn",
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Signin",
+                "summary": "SignIn",
                 "parameters": [
                     {
                         "description": "User ID",
@@ -711,6 +711,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "phone": {
+                    "description": "Make phone unique",
                     "type": "string"
                 },
                 "role": {

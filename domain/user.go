@@ -27,7 +27,7 @@ type User struct {
 	ID             string `gorm:"primaryKey"`
 	Name           string
 	Email          string
-	Phone          string
+	Phone          string `gorm:"unique"` // Make phone unique
 	University     string
 	SizeJersey     string
 	FoodLimitation string
@@ -40,3 +40,4 @@ type User struct {
 	Role           Role
 	Education      Education
 }
+

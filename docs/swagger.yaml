@@ -70,6 +70,7 @@ definitions:
       name:
         type: string
       phone:
+        description: Make phone unique
         type: string
       role:
         $ref: '#/definitions/domain.Role'
@@ -140,7 +141,7 @@ paths:
             $ref: '#/definitions/domain.ErrorResponse'
       security:
       - BearerAuth: []
-      summary: Update user role by ID
+      summary: Update Account Info
   /api/users/{id}:
     delete:
       description: Delete a user by its ID
@@ -439,7 +440,7 @@ paths:
       summary: Update user role by ID
   /api/users/signin:
     post:
-      description: Signin
+      description: SignIn
       parameters:
       - description: User ID
         in: body
@@ -466,5 +467,5 @@ paths:
           description: Failed to signin
           schema:
             $ref: '#/definitions/domain.ErrorResponse'
-      summary: Signin
+      summary: SignIn
 swagger: "2.0"
