@@ -194,7 +194,7 @@ func (h *UserHandler) Update(c *fiber.Ctx) error {
 // @security BearerAuth
 // @Param id path string true "User ID"
 // @Success 200 {object} domain.User
-// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to fetch User"
 // @Failure 400 {object} domain.ErrorResponse "User has already entered"
 // @Router /api/users/qr/{id} [post]
 func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
@@ -204,7 +204,7 @@ func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 		if errors.Is(err, domain.ErrUserAlreadyEntered) {
 			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered"})
 		}
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "User not found"})
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to scan QR"})
 	}
 	return c.Status(fiber.StatusOK).JSON(user)
 }

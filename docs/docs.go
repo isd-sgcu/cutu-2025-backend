@@ -182,8 +182,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }
                     },
-                    "404": {
-                        "description": "User not found",
+                    "500": {
+                        "description": "Failed to fetch User",
                         "schema": {
                             "$ref": "#/definitions/domain.ErrorResponse"
                         }

@@ -74,17 +74,21 @@ This option will automatically reload the server when you change any Go files.
 Here is the updated `README.md` based on the new API:
 
 
+Here’s the updated `README.md` based on the provided `swagger.yaml`:
+
+---
+
 # User Management API
 
-This API provides endpoints for managing users in the system, including retrieving, updating, and registering users. It also includes functionality for handling QR codes and managing user roles.
+This API provides endpoints for managing users in the system, including retrieving, updating, and registering users. It also includes functionality for handling QR codes, managing user roles, and authentication.
+
+---
 
 ## API Endpoints
 
-### 1. Get All Users
-
+### 1. **Get All Users**
 **Endpoint:** `/api/users`  
-**Method:** `GET`
-
+**Method:** `GET`  
 **Permission:** BearerAuth (Staff, Admin)
 
 Retrieve a list of all users.
@@ -93,11 +97,31 @@ Retrieve a list of all users.
 - `200 OK`: Returns a list of users.
 - `500 Internal Server Error`: Failed to fetch users.
 
-### 2. Get User by ID
+---
 
+### 2. **Update Account Info**
+**Endpoint:** `/api/users`  
+**Method:** `PATCH`  
+**Permission:** BearerAuth
+
+Update that staff member's personal information.
+
+**Parameters:**
+- `user` (body) - User data (JSON).
+
+**Response:**
+- `204 No Content`: User successfully updated.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user.
+
+---
+
+### 3. **Get User by ID**
 **Endpoint:** `/api/users/{id}`  
-**Method:** `GET`
-
+**Method:** `GET`  
 **Permission:** BearerAuth
 
 Retrieve a user by its ID.
@@ -110,13 +134,86 @@ Retrieve a user by its ID.
 - `404 Not Found`: User not found.
 - `500 Internal Server Error`: Failed to fetch user.
 
-### 3. Register a New User
+---
 
+### 4. **Update User by ID**
+**Endpoint:** `/api/users/{id}`  
+**Method:** `PATCH`  
+**Permission:** BearerAuth
+
+Update a user by its ID.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+- `user` (body) - User data (JSON).
+
+**Response:**
+- `204 No Content`: User successfully updated.
+- `400 Bad Request`: Invalid input.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to update user.
+
+---
+
+### 5. **Delete User by ID**
+**Endpoint:** `/api/users/{id}`  
+**Method:** `DELETE`  
+**Permission:** BearerAuth (Admin)
+
+Delete a user by its ID.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Response:**
+- `204 No Content`: User successfully deleted.
+- `401 Unauthorized`: Unauthorized.
+- `403 Forbidden`: Forbidden.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to delete user.
+
+---
+
+### 6. **Get QR Code URL for User**
+**Endpoint:** `/api/users/qr/{id}`  
+**Method:** `GET`  
+**Permission:** BearerAuth
+
+Retrieve a QR code URL for a user.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Response:**
+- `200 OK`: Returns the QR code URL.
+- `404 Not Found`: User not found.
+- `500 Internal Server Error`: Failed to fetch user.
+
+---
+
+### 7. **Scan QR Code**
+**Endpoint:** `/api/users/qr/{id}`  
+**Method:** `POST`  
+**Permission:** BearerAuth (Staff, Admin)
+
+Scan a QR code and perform associated actions.
+
+**Parameters:**
+- `id` (path) - The ID of the user.
+
+**Response:**
+- `200 OK`: User scanned successfully.
+- `400 Bad Request`: User has already entered.
+- `500 Internal Server Error`: Failed to fetch user.
+
+---
+
+### 8. **Register a New User**
 **Endpoint:** `/api/users/register`  
-**Method:** `POST`
-
+**Method:** `POST`  
 **Permission:** No
-
 
 Register a new user in the system.
 
@@ -141,66 +238,11 @@ Register a new user in the system.
 - `401 Unauthorized`: Unauthorized.
 - `500 Internal Server Error`: Failed to create user.
 
-### 4. Update User by ID
+---
 
-**Endpoint:** `/api/users/{id}`  
-**Method:** `PATCH`
-
-**Permission:** BearerAuth (Admin)
-
-Update a user by its ID.
-
-**Parameters:**
-- `id` (path) - The ID of the user.
-- `user` (body) - User data (JSON).
-
-**Response:**
-- `204 No Content`: User successfully updated.
-- `400 Bad Request`: Invalid input.
-- `401 Unauthorized`: Unauthorized.
-- `403 Forbidden`: Forbidden.
-- `404 Not Found`: User not found.
-- `500 Internal Server Error`: Failed to update user.
-
-### 5. Get QR Code URL for User
-
-**Endpoint:** `/api/users/qr/{id}`  
-**Method:** `GET`
-
-**Permission:** BearerAuth 
-
-Retrieve a QR code URL for a user.
-
-**Parameters:**
-- `id` (path) - The ID of the user.
-
-**Response:**
-- `200 OK`: Returns the QR code URL.
-- `404 Not Found`: User not found.
-- `500 Internal Server Error`: Failed to fetch user.
-
-### 6. Scan QR Code
-
-**Endpoint:** `/api/users/qr/{id}`  
-**Method:** `POST`
-
-**Permission:** BearerAuth (Staff, Admin)
-
-Scan a QR code and perform associated actions.
-
-**Parameters:**
-- `id` (path) - The ID of the user.
-
-**Response:**
-- `200 OK`: User scanned successfully.
-- `404 Not Found`: User not found.
-- `500 Internal Server Error`: Failed to process QR code.
-
-### 7. Update User Role by ID
-
+### 9. **Update User Role by ID**
 **Endpoint:** `/api/users/role/{id}`  
-**Method:** `PATCH`
-
+**Method:** `PATCH`  
 **Permission:** BearerAuth (Admin)
 
 Update a user role by its ID.
@@ -217,50 +259,29 @@ Update a user role by its ID.
 - `404 Not Found`: User not found.
 - `500 Internal Server Error`: Failed to update user role.
 
-### 8. Update Staff Info
+---
 
-**Endpoint:** `/api/users/`  
-**Method:** `PATCH`
+### 10. **SignIn**
+**Endpoint:** `/api/users/signin`  
+**Method:** `POST`  
+**Permission:** No
 
-Update a staff role by its credentials.
-
-**Parameters:**
-- `user` (body) - User data (JSON).
-
-**Permission:** BearerAuth
-
-**Response:**
-- `204 No Content`: User role updated successfully.
-- `400 Bad Request`: Invalid input.
-- `401 Unauthorized`: Unauthorized.
-- `403 Forbidden`: Forbidden.
-- `404 Not Found`: User not found.
-- `500 Internal Server Error`: Failed to update user role.
-
-### 9. Remove Account
-
-**Endpoint:** `/api/users/{id}`  
-**Method:** `DELETE`
-
-Delete account
+Authenticate a user and return an access token.
 
 **Parameters:**
-- `id` (path) - The ID of the user.
-
-**Permission:** BearerAuth(Admin)
+- `id` (body) - User ID.
 
 **Response:**
-- `204 No Content`: User role updated successfully.
+- `200 OK`: Returns an access token.
 - `400 Bad Request`: Invalid input.
 - `401 Unauthorized`: Unauthorized.
-- `403 Forbidden`: Forbidden.
-- `404 Not Found`: User not found.
-- `500 Internal Server Error`: Failed to update user role.
+- `500 Internal Server Error`: Failed to sign in.
+
+---
 
 ## Error Responses
 
 ### Error Response Format
-
 ```json
 {
   "error": "Error message here"
@@ -274,27 +295,29 @@ Delete account
 - `404 Not Found`: Resource not found.
 - `500 Internal Server Error`: An error occurred on the server.
 
+---
+
 ## Definitions
 
-### Education Enum
+### **Education Enum**
 - `studying`: The user is currently studying.
 - `graduated`: The user has graduated.
 
-### Role Enum
+### **Role Enum**
 - `member`: A member user.
 - `staff`: A staff user.
 - `admin`: An admin user.
 
-### Status Enum
+### **Status Enum**
 - `student`: The user is a student.
 - `alumni`: The user is an alumni.
 - `general_public`: The user is from the general public.
 
-### TokenResponse
+### **TokenResponse**
 - `accessToken`: The access token for authentication.
 - `userId`: The user ID associated with the token.
 
-### User
+### **User**
 A user object containing:
 - `id`: The user ID.
 - `name`: The user name.
@@ -304,5 +327,12 @@ A user object containing:
 - `role`: The user's role.
 - `education`: The user's education status.
 - `imageURL`: The user's profile image URL.
+- `faculty`: The user's faculty.
+- `foodLimitation`: The user's food limitations.
+- `graduatedYear`: The year the user graduated.
+- `invitationCode`: The user's invitation code.
+- `lastEntered`: Timestamp for the last QR scan.
+- `sizeJersey`: The user's jersey size.
+- `university`: The user's university.
 
 ---
