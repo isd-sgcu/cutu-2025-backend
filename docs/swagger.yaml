@@ -31,14 +31,16 @@ definitions:
     - Admin
   domain.Status:
     enum:
-    - student
+    - chula_student
     - alumni
     - general_public
+    - general_student
     type: string
     x-enum-varnames:
-    - StatusStudent
+    - StatusChulaStudent
     - StatusAlumni
     - StatusGeneralPublic
+    - StatusGeneralStudent
   domain.TokenResponse:
     properties:
       accessToken:
@@ -344,9 +346,10 @@ paths:
         type: string
       - description: User Status
         enum:
-        - student
+        - chula_student
         - alumni
         - general_public
+        - general_student
         in: formData
         name: status
         required: true

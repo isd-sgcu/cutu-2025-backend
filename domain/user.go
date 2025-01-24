@@ -13,9 +13,10 @@ const (
 )
 
 const (
-	StatusStudent       Status = "student"
-	StatusAlumni        Status = "alumni"
-	StatusGeneralPublic Status = "general_public"
+	StatusChulaStudent   Status = "chula_student"
+	StatusAlumni         Status = "alumni"
+	StatusGeneralPublic  Status = "general_public"
+	StatusGeneralStudent Status = "general_student"
 )
 
 const (
@@ -40,4 +41,3 @@ type User struct {
 	Role           Role
 	Education      Education
 }
-

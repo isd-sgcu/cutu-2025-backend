@@ -258,9 +258,10 @@ const docTemplate = `{
                     },
                     {
                         "enum": [
-                            "student",
+                            "chula_student",
                             "alumni",
-                            "general_public"
+                            "general_public",
+                            "general_student"
                         ],
                         "type": "string",
                         "description": "User Status",
@@ -655,14 +656,16 @@ const docTemplate = `{
         "domain.Status": {
             "type": "string",
             "enum": [
-                "student",
+                "chula_student",
                 "alumni",
-                "general_public"
+                "general_public",
+                "general_student"
             ],
             "x-enum-varnames": [
-                "StatusStudent",
+                "StatusChulaStudent",
                 "StatusAlumni",
-                "StatusGeneralPublic"
+                "StatusGeneralPublic",
+                "StatusGeneralStudent"
             ]
         },
         "domain.TokenResponse": {

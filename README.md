@@ -309,7 +309,7 @@ Authenticate a user and return an access token.
 - `admin`: An admin user.
 
 ### **Status Enum**
-- `student`: The user is a student.
+- `chula_student`: The user is a Chula student.
 - `alumni`: The user is an alumni.
 - `general_public`: The user is from the general public.
 
