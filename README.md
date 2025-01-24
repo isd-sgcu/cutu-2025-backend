@@ -310,6 +310,7 @@ Authenticate a user and return an access token.
 
 ### **Status Enum**
 - `chula_student`: The user is a Chula student.
+- `general_student`: The user is a Chula student.
 - `alumni`: The user is an alumni.
 - `general_public`: The user is from the general public.
 
