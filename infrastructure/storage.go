@@ -48,10 +48,10 @@ func NewS3Client(cfg *config.Config) *S3Client {
 
 	// Check if the client is successfully connected by listing the buckets
 	//! It's error for connectiong with S3 now
-	// _, err = client.ListBuckets(&s3.ListBucketsInput{})
-	// if err != nil {
-	// 	panic(fmt.Sprintf("Failed to connect to S3 service: %v", err))
-	// }
+	_, err = client.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		panic(fmt.Sprintf("Failed to connect to S3 service: %v", err))
+	}
 
 	fmt.Println("Successfully connected to the S3 service")
 
@@ -67,6 +67,8 @@ func (c *S3Client) UploadFile(bucketName, objectKey string, buffer *bytes.Reader
 		Key:    aws.String(objectKey),
 		Body:   buffer,
 		ACL:    aws.String(s3.ObjectCannedACLPublicRead),
+		ContentDisposition: aws.String("inline"), // Ensure file is displayed in the browser
+		ContentType:        aws.String("application/octet-stream"), // Set MIME type for better browser handling
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload file, %v", err)
@@ -78,6 +80,7 @@ func (c *S3Client) UploadFile(bucketName, objectKey string, buffer *bytes.Reader
 	// Return the URL of the uploaded file
 	return fileURL, nil
 }
+
 
 func (c *S3Client) DownloadFile(bucketName, objectKey, filePath string) error {
 	result, err := c.client.GetObject(&s3.GetObjectInput{

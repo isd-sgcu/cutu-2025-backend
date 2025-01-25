@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
+	"io"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -69,19 +72,19 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 
 	// Convert the file stream to a byte slice
 	// ! Cant use S3 for now
-	// fileBytes, err := io.ReadAll(file)
-	// if err != nil {
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
-	// }
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
+	}
 
 	// Upload the file using the existing UploadFile method
 	// ! Cant use S3 for now
-	// fileReader := bytes.NewReader(fileBytes)
-	// s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
-	// s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
-	// if err != nil {
-	// 	return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
-	// }
+	fileReader := bytes.NewReader(fileBytes)
+	s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
+	s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
+	}
 
 	// Map form values to user object
 	user := &domain.User{
@@ -112,7 +115,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 			return nil
 		}(),
 		Education: domain.Education(form.Value["education"][0]),
-		ImageURL:  "https://picsum.photos/id/237/200/300", //TODO: Waiting for S3
+		ImageURL:  s3URL, //TODO: Waiting for S3
 	}
 
 	// Register user

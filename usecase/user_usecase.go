@@ -154,3 +154,12 @@ func (u *UserUsecase) GetQRURL(id string) (string, error) {
 func (u *UserUsecase) Delete(id string) error {
 	return u.Repo.Delete(id)
 }
+
+// Get Card ID image
+func (u *UserUsecase) GetCardID(id string) (string, error) {
+	user, err := u.Repo.GetById(id)
+	if err != nil {
+		return "", err
+	}
+	return user.ImageURL, nil
+}
