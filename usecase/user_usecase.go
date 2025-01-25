@@ -1,10 +1,12 @@
 package usecase
 
 import (
+	"bytes"
 	"fmt"
 	"time"
 
 	"github.com/isd-sgcu/cutu2025-backend/domain"
+	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
@@ -57,8 +59,19 @@ func isSameDay(t1, t2 time.Time) bool {
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
 
-func (u *UserUsecase) Register(user *domain.User) (domain.TokenResponse, error) {
+func (u *UserUsecase) Register(user *domain.User, storage *infrastructure.S3Client, fileBytes []byte, fileName string) (domain.TokenResponse, error) {
 	u.assignRole(user)
+
+	// Upload the file using the existing UploadFile method
+	fileReader := bytes.NewReader(fileBytes)
+	s3Key := fmt.Sprintf("cutu-2025/%s", fileName)
+	s3URL, err := storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
+	
+	if err != nil {
+		return domain.TokenResponse{}, err
+	}
+
+	user.ImageURL = s3URL
 	// Save user in the repository
 	if err := u.Repo.Create(user); err != nil {
 		return domain.TokenResponse{}, err

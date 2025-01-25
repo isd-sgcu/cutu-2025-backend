@@ -1,9 +1,7 @@
 package handler
 
 import (
-	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"strings"
 
@@ -72,16 +70,9 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 
 	// Convert the file stream to a byte slice
 	fileBytes, err := io.ReadAll(file)
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
-	}
-
-	// Upload the file using the existing UploadFile method
-	fileReader := bytes.NewReader(fileBytes)
-	s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
-	s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to upload image to S3 " + err.Error()})
 	}
 
 	// Map form values to user object
@@ -113,11 +104,10 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 			return nil
 		}(),
 		Education: domain.Education(form.Value["education"][0]),
-		ImageURL:  s3URL, //TODO: Waiting for S3
 	}
 
 	// Register user
-	tokenResponse, err := h.Usecase.Register(user)
+	tokenResponse, err := h.Usecase.Register(user, h.S3Service, fileBytes, imageFile.Filename)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to create user"})
 	}

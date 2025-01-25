@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/swagger"
 	"github.com/isd-sgcu/cutu2025-backend/config"
 	_ "github.com/isd-sgcu/cutu2025-backend/docs"
@@ -21,6 +22,11 @@ func main() {
 	// Initialize Fiber app
 	app := fiber.New()
 	app.Use(middleware.RequestLoggerMiddleware())
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:3000/",
+		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
 
 	// Connect to the database
 	db := infrastructure.ConnectDatabase(cfg)
