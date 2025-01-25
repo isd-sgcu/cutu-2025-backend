@@ -24,8 +24,10 @@ func main() {
 	app.Use(middleware.RequestLoggerMiddleware())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:3000/",
-		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowOrigins:     "http://localhost:3000", // Remove trailing slash
+		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+		AllowHeaders:     "Origin,Content-Type,Accept,Authorization", // Add Authorization here
+		AllowCredentials: true,
 	}))
 
 	// Connect to the database
