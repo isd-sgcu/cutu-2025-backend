@@ -47,7 +47,6 @@ func NewS3Client(cfg *config.Config) *S3Client {
 	client := s3.New(sess)
 
 	// Check if the client is successfully connected by listing the buckets
-	//! It's error for connectiong with S3 now
 	_, err = client.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		panic(fmt.Sprintf("Failed to connect to S3 service: %v", err))

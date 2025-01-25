@@ -71,14 +71,12 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	defer file.Close()
 
 	// Convert the file stream to a byte slice
-	// ! Cant use S3 for now
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
 	}
 
 	// Upload the file using the existing UploadFile method
-	// ! Cant use S3 for now
 	fileReader := bytes.NewReader(fileBytes)
 	s3Key := fmt.Sprintf("cutu-2025/%s", imageFile.Filename)
 	s3URL, err := h.S3Service.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
