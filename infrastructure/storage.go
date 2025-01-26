@@ -1,7 +1,7 @@
 package infrastructure
 
 import (
-	"log" // ใช้ log สำหรับการแสดงข้อความ error และ success
+	"log"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
