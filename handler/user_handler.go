@@ -7,20 +7,18 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/isd-sgcu/cutu2025-backend/domain"
-	"github.com/isd-sgcu/cutu2025-backend/infrastructure"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
 	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 // UserHandler represents the handler for user-related endpoints
 type UserHandler struct {
-	Usecase   *usecase.UserUsecase
-	S3Service *infrastructure.S3Client
+	Usecase *usecase.UserUsecase
 }
 
 // NewUserHandler creates a new UserHandler
-func NewUserHandler(usecase *usecase.UserUsecase, s3Service *infrastructure.S3Client) *UserHandler {
-	return &UserHandler{Usecase: usecase, S3Service: s3Service}
+func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
+	return &UserHandler{Usecase: usecase}
 }
 
 // Register godoc
@@ -107,7 +105,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	}
 
 	// Register user
-	tokenResponse, err := h.Usecase.Register(user, h.S3Service, fileBytes, imageFile.Filename)
+	tokenResponse, err := h.Usecase.Register(user, fileBytes, imageFile.Filename)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to create user"})
 	}

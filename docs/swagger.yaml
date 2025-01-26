@@ -11,6 +11,8 @@ definitions:
     properties:
       error:
         type: string
+      message:
+        type: string
     type: object
   domain.QrResponse:
     properties:
