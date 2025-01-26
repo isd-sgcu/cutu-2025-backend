@@ -111,7 +111,7 @@ Update that staff member's personal information.
 ### 3. **Add Staff by Phone**
 **Endpoint:** `/api/users/addstaff/{phone}`  
 **Method:** `PATCH`  
-**Permission:** No
+**Permission:** BearerAuth (Admin)
 
 Add a staff member by their phone number.
 
@@ -210,7 +210,7 @@ Scan a QR code and perform associated actions.
 - `id` (path) - The ID of the user.
 
 **Response:**
-- `200 OK`: User scanned successfully.
+- `200 OK`: User scanned successfully with User data including last
 - `400 Bad Request`: User has already entered.
 - `500 Internal Server Error`: Failed to fetch user.
 
