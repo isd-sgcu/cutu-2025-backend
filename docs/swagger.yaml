@@ -247,6 +247,31 @@ paths:
       security:
       - BearerAuth: []
       summary: Update user by ID
+  /api/users/addstaff/{phone}:
+    patch:
+      description: Add Staff By phone number
+      parameters:
+      - description: User Phone
+        in: path
+        name: phone
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: User is already a staff
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Failed to add staff
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add Staff
   /api/users/qr/{id}:
     get:
       description: Retrieve a QR code URL for a user

@@ -71,17 +71,6 @@ air -c .air.toml
 
 This option will automatically reload the server when you change any Go files.
 
-Here is the updated `README.md` based on the new API:
-
-
-Here’s the updated `README.md` based on the provided `swagger.yaml`:
-
----
-
-# User Management API
-
-This API provides endpoints for managing users in the system, including retrieving, updating, and registering users. It also includes functionality for handling QR codes, managing user roles, and authentication.
-
 ---
 
 ## API Endpoints
@@ -119,7 +108,24 @@ Update that staff member's personal information.
 
 ---
 
-### 3. **Get User by ID**
+### 3. **Add Staff by Phone**
+**Endpoint:** `/api/users/addstaff/{phone}`  
+**Method:** `PATCH`  
+**Permission:** No
+
+Add a staff member by their phone number.
+
+**Parameters:**
+- `phone` (path) - The phone number of the user.
+
+**Response:**
+- `204 No Content`: Staff added successfully.
+- `400 Bad Request`: User is already a staff.
+- `500 Internal Server Error`: Failed to add staff.
+
+---
+
+### 4. **Get User by ID**
 **Endpoint:** `/api/users/{id}`  
 **Method:** `GET`  
 **Permission:** BearerAuth
@@ -136,7 +142,7 @@ Retrieve a user by its ID.
 
 ---
 
-### 4. **Update User by ID**
+### 5. **Update User by ID**
 **Endpoint:** `/api/users/{id}`  
 **Method:** `PATCH`  
 **Permission:** BearerAuth
@@ -157,7 +163,7 @@ Update a user by its ID.
 
 ---
 
-### 5. **Delete User by ID**
+### 6. **Delete User by ID**
 **Endpoint:** `/api/users/{id}`  
 **Method:** `DELETE`  
 **Permission:** BearerAuth (Admin)
@@ -176,7 +182,7 @@ Delete a user by its ID.
 
 ---
 
-### 6. **Get QR Code URL for User**
+### 7. **Get QR Code URL for User**
 **Endpoint:** `/api/users/qr/{id}`  
 **Method:** `GET`  
 **Permission:** BearerAuth
@@ -193,7 +199,7 @@ Retrieve a QR code URL for a user.
 
 ---
 
-### 7. **Scan QR Code**
+### 8. **Scan QR Code**
 **Endpoint:** `/api/users/qr/{id}`  
 **Method:** `POST`  
 **Permission:** BearerAuth (Staff, Admin)
@@ -210,7 +216,7 @@ Scan a QR code and perform associated actions.
 
 ---
 
-### 8. **Register a New User**
+### 9. **Register a New User**
 **Endpoint:** `/api/users/register`  
 **Method:** `POST`  
 **Permission:** No
@@ -226,7 +232,7 @@ Register a new user in the system.
 - `sizeJersey` (string) - Jersey Size
 - `foodLimitation` (string) - Food Limitation
 - `invitationCode` (string) - Invitation Code
-- `status` (string) - User Status (`student`, `alumni`, `general_public`)
+- `status` (string) - User Status (`chula_student`, `alumni`, `general_public`, `general_student`)
 - `image` (file) - User Image
 - `graduatedYear` (string) - Graduated Year
 - `faculty` (string) - Faculty
@@ -240,7 +246,7 @@ Register a new user in the system.
 
 ---
 
-### 9. **Update User Role by ID**
+### 10. **Update User Role by ID**
 **Endpoint:** `/api/users/role/{id}`  
 **Method:** `PATCH`  
 **Permission:** BearerAuth (Admin)
@@ -261,7 +267,7 @@ Update a user role by its ID.
 
 ---
 
-### 10. **SignIn**
+### 11. **SignIn**
 **Endpoint:** `/api/users/signin`  
 **Method:** `POST`  
 **Permission:** No
@@ -310,9 +316,9 @@ Authenticate a user and return an access token.
 
 ### **Status Enum**
 - `chula_student`: The user is a Chula student.
-- `general_student`: The user is a General student.
 - `alumni`: The user is an alumni.
 - `general_public`: The user is from the general public.
+- `general_student`: The user is a general student.
 
 ### **TokenResponse**
 - `accessToken`: The access token for authentication.
@@ -335,5 +341,3 @@ A user object containing:
 - `lastEntered`: Timestamp for the last QR scan.
 - `sizeJersey`: The user's jersey size.
 - `university`: The user's university.
-
----

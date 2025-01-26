@@ -327,3 +327,25 @@ func (h *UserHandler) SignIn(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(tokenResponse)
 }
+
+// Add Staff godoc
+// @Summary Add Staff
+// @security BearerAuth
+// @Description Add Staff By phone number
+// @Produce  json
+// @Param phone path string true "User Phone"
+// @Success 204
+// @Failure 400 {object} domain.ErrorResponse "User is already a staff"
+// @Failure 500 {object} domain.ErrorResponse "Failed to add staff"
+// @Router /api/users/addstaff/{phone} [patch]
+func (h *UserHandler) AddStaff(c *fiber.Ctx) error {
+	phone := c.Params("phone")
+	if err := h.Usecase.AddStaff(phone); err != nil {
+		if errors.Is(err, domain.ErrUserAlreadyStaff) {
+			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User is already a staff"})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to add staff"})
+	}
+
+	return c.SendStatus(fiber.StatusNoContent)
+}

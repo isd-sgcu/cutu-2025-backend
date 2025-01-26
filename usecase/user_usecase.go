@@ -18,6 +18,7 @@ type UserRepositoryInterface interface {
 	Create(user *domain.User) error
 	GetAll() ([]domain.User, error)
 	GetById(id string) (domain.User, error)
+	GetByPhone(phone string) (domain.User, error)
 	Update(id string, user *domain.User) error
 	Delete(id string) error
 }
@@ -66,7 +67,7 @@ func (u *UserUsecase) Register(user *domain.User, storage *infrastructure.S3Clie
 	fileReader := bytes.NewReader(fileBytes)
 	s3Key := fmt.Sprintf("cutu-2025/%s", fileName)
 	s3URL, err := storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
-	
+
 	if err != nil {
 		return domain.TokenResponse{}, err
 	}
@@ -175,4 +176,17 @@ func (u *UserUsecase) GetCardID(id string) (string, error) {
 		return "", err
 	}
 	return user.ImageURL, nil
+}
+
+// Add Staff by phone number
+func (u *UserUsecase) AddStaff(phone string) error {
+	user, err := u.Repo.GetByPhone(phone)
+	if err != nil {
+		return err
+	}
+	if user.Role == domain.Staff {
+		return domain.ErrUserAlreadyStaff
+	}
+	user.Role = domain.Staff
+	return u.Repo.Update(user.ID, &user)
 }

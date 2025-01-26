@@ -29,6 +29,12 @@ func (r *UserRepository) GetById(id string) (domain.User, error) {
 	return user, err
 }
 
+func (r *UserRepository) GetByPhone(phone string) (domain.User, error) {
+	var user domain.User
+	err := r.DB.Where("phone = ?", phone).First(&user).Error
+	return user, err
+}
+
 func (r *UserRepository) Update(id string, user *domain.User) error {
 	err := r.DB.Model(&domain.User{}).Where("id = ?", id).Updates(user).Error
 	return err

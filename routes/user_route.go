@@ -44,6 +44,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase, s3 *in
 		userHandler.Update)
 
 	api.Patch("/", middleware.AuthMiddleware(userUsecase), userHandler.UpdateMyAccountInfo)
+	api.Patch("/addstaff/:phone", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.AddStaff)
 	api.Delete("/:id", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.Delete)
 	api.Patch("/role/:id", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.UpdateRole)
 }
