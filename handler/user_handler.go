@@ -193,7 +193,8 @@ func (h *UserHandler) ScanQR(c *fiber.Ctx) error {
 	user, err := h.Usecase.ScanQR(id)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserAlreadyEntered) {
-			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered"})
+			t := user.LastEntered.String()
+			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "User has already entered", Message: &t})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to scan QR"})
 	}

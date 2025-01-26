@@ -135,7 +135,7 @@ func (u *UserUsecase) ScanQR(id string) (domain.User, error) {
 	now := time.Now()
 	// Check if the user has already entered today
 	if user.LastEntered != nil && isSameDay(*user.LastEntered, now) {
-		return domain.User{}, domain.ErrUserAlreadyEntered
+		return user, domain.ErrUserAlreadyEntered
 	}
 
 	// Update the last entry timestamp

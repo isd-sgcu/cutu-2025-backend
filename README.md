@@ -211,7 +211,13 @@ Scan a QR code and perform associated actions.
 
 **Response:**
 - `200 OK`: User scanned successfully with User data including last
-- `400 Bad Request`: User has already entered.
+- `400 Bad Request`: User has already entered with last enter time.
+```
+{
+    "error": "User has already entered",
+    "message": "2025-01-26 18:39:15.10983 +0700 +07"
+}
+```
 - `500 Internal Server Error`: Failed to fetch user.
 
 ---
