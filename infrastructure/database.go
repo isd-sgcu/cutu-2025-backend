@@ -15,10 +15,9 @@ func ConnectDatabase(cfg *config.Config) *gorm.DB {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err) // ใช้ log.Fatalf เพื่อแสดงข้อผิดพลาดและหยุดโปรแกรม
+		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// แสดง log ว่าเชื่อมต่อสำเร็จ
 	log.Println("Successfully connected to the database")
 
 	// Automatically migrate the schema, creating tables if they don't exist

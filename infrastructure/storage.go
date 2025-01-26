@@ -28,8 +28,8 @@ func ConnectToS3(cfg *config.Config) *s3.S3 {
 	sess, err := session.NewSession(&aws.Config{
 		Region:           aws.String(region),
 		Credentials:      creds,
-		Endpoint:         aws.String("https://storage.googleapis.com"), // ระบุ endpoint สำหรับ GCS หากใช้ GCS แทน S3
-		S3ForcePathStyle: aws.Bool(true),                               // ใช้ path-style access
+		Endpoint:         aws.String("https://storage.googleapis.com"),
+		S3ForcePathStyle: aws.Bool(true),                              
 	})
 	if err != nil {
 		log.Fatalf("Failed to create AWS session: %v", err)
