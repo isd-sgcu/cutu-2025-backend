@@ -25,19 +25,19 @@ const (
 )
 
 type User struct {
-	ID             string `gorm:"primaryKey"`
-	Name           string
-	Email          string
-	Phone          string `gorm:"unique"` // Make phone unique
-	University     string
-	SizeJersey     string
-	FoodLimitation string
-	InvitationCode *string
-	Status         Status
-	GraduatedYear  *string
-	Faculty        *string
-	ImageURL       string
-	LastEntered    *time.Time // Timestamp for the last QR scan
-	Role           Role
-	Education      Education
+	ID             string     `json:"id" gorm:"primaryKey"`
+	Name           string     `json:"name"`
+	Email          string     `json:"email"`
+	Phone          string     `json:"phone" gorm:"unique"` // Make phone unique
+	University     string     `json:"university"`
+	SizeJersey     string     `json:"sizeJersey"`
+	FoodLimitation string     `json:"foodLimitation"`
+	InvitationCode *string    `json:"invitationCode"`
+	Status         Status     `json:"status"`
+	GraduatedYear  *string    `json:"graduatedYear"`
+	Faculty        *string    `json:"faculty"`
+	ImageURL       string     `json:"imageUrl"`
+	LastEntered    *time.Time `json:"lastEntered"` // Timestamp for the last QR scan
+	Role           Role       `json:"role"`
+	Education      Education  `json:"education"`
 }

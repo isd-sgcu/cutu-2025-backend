@@ -743,7 +743,7 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "imageURL": {
+                "imageUrl": {
                     "type": "string"
                 },
                 "invitationCode": {
