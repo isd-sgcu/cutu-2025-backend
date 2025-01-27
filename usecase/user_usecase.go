@@ -11,7 +11,7 @@ import (
 
 const (
 	userCacheKeyPrefix   = "user:"
-	userCacheExpiration  = 1 * time.Hour
+	userCacheExpiration  = 3 * time.Minute
 	allUsersCacheKey     = "users:all"
 	usersByNameCacheKey  = "users:name:"
 	usersByPhoneCacheKey = "users:phone:"
