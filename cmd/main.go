@@ -36,12 +36,16 @@ func main() {
 	// Connect to S3
 	s3 := infrastructure.ConnectToS3(cfg)
 
+	// Connect to Cache
+	cache := infrastructure.ConnectRedis(cfg)
+
 	// Initialize repositories
 	repo := repository.NewUserRepository(db)
 	storage := repository.NewStorageRepository(s3)
+	cacheRepo := repository.NewCacheRepository(cache)
 
 	// Initialize use cases
-	userUsecase := usecase.NewUserUsecase(repo, storage)
+	userUsecase := usecase.NewUserUsecase(repo, storage, cacheRepo)
 
 	// Register routes
 	routes.RegisterUserRoutes(app, userUsecase) // Register the user routes

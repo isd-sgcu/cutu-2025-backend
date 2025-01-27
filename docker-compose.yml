@@ -13,6 +13,17 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data
     ports:
       - "5438:5432"
+      
+  cache:
+    image: redis:7.0-alpine
+    container_name: cache
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=redispassword
+    ports:
+      - "6380:6379"  # Exposing the Redis port
+    networks:
+      - default  # Using the same network as the db service
 
 networks:
   default:
