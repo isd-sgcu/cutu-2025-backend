@@ -96,7 +96,12 @@ info:
 paths:
   /api/users:
     get:
-      description: Retrieve a list of all users
+      description: Retrieve a list of all users with optional filtering
+      parameters:
+      - description: Filter by name
+        in: query
+        name: name
+        type: string
       produces:
       - application/json
       responses:

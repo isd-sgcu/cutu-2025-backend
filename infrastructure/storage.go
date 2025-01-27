@@ -21,10 +21,8 @@ func ConnectToS3(cfg *config.Config) *s3.S3 {
 		log.Fatalf("AWS credentials or region not found in configuration: AccessKey=%s, Region=%s", accessKey, region)
 	}
 
-	// สร้าง AWS credentials object
 	creds := credentials.NewStaticCredentials(accessKey, secretKey, "")
 
-	// สร้าง session ใหม่
 	sess, err := session.NewSession(&aws.Config{
 		Region:           aws.String(region),
 		Credentials:      creds,
@@ -35,10 +33,8 @@ func ConnectToS3(cfg *config.Config) *s3.S3 {
 		log.Fatalf("Failed to create AWS session: %v", err)
 	}
 
-	// สร้าง S3 client
 	client := s3.New(sess)
 
-	// ตรวจสอบการเชื่อมต่อกับ S3 โดยการเรียก ListBuckets
 	_, err = client.ListBuckets(&s3.ListBucketsInput{})
 	if err != nil {
 		log.Fatalf("Failed to connect to S3 service: %v", err)

@@ -19,6 +19,7 @@ type UserRepositoryInterface interface {
 	GetAll() ([]domain.User, error)
 	GetById(id string) (domain.User, error)
 	GetByPhone(phone string) (domain.User, error)
+	GetByName(name string) ([]domain.User, error)
 	Update(id string, user *domain.User) error
 	Delete(id string) error
 }
@@ -97,7 +98,10 @@ func (u *UserUsecase) Register(user *domain.User, fileBytes []byte, fileName str
 	}, nil
 }
 
-func (u *UserUsecase) GetAll() ([]domain.User, error) {
+func (u *UserUsecase) GetAll(filter string) ([]domain.User, error) {
+	if filter != "" {
+		return u.Repo.GetByName(filter)
+	}
 	return u.Repo.GetAll()
 }
 

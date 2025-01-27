@@ -11,11 +11,19 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retrieve a list of all users",
+                "description": "Retrieve a list of all users with optional filtering",
                 "produces": [
                     "application/json"
                 ],
                 "summary": "Get all users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by name",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

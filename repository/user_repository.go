@@ -29,6 +29,12 @@ func (r *UserRepository) GetById(id string) (domain.User, error) {
 	return user, err
 }
 
+func (r *UserRepository) GetByName(name string) ([]domain.User, error) {
+	var users []domain.User
+	err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&users).Error
+	return users, err
+}
+
 func (r *UserRepository) GetByPhone(phone string) (domain.User, error) {
 	var user domain.User
 	err := r.DB.Where("phone = ?", phone).First(&user).Error

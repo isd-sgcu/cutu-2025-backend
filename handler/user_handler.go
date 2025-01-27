@@ -121,17 +121,22 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 
 // GetAll godoc
 // @Summary Get all users
-// @Description Retrieve a list of all users
+// @Description Retrieve a list of all users with optional filtering
 // @Produce  json
+// @Param name query string false "Filter by name"
 // @security BearerAuth
 // @Success 200 {array} domain.User
 // @Failure 500 {object} domain.ErrorResponse "Failed to fetch users"
 // @Router /api/users [get]
 func (h *UserHandler) GetAll(c *fiber.Ctx) error {
-	users, err := h.Usecase.GetAll()
+	// Get query parameters
+	filter := c.Query("name")
+
+	users, err := h.Usecase.GetAll(filter)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to fetch users"})
 	}
+
 	return c.Status(fiber.StatusOK).JSON(users)
 }
 
