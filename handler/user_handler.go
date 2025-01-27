@@ -36,6 +36,9 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Param invitationCode formData string false "Invitation Code"
 // @Param status formData domain.Status true "User Status"
 // @Param image formData file true "User Image"
+// @Param age formData string false "User Age"
+// @Param chronicDisease formData string false "Chronic Disease"
+// @Param drugAllergy formData string false "Drug Allergy"
 // @Param graduatedYear formData string false "Graduated Year"
 // @Param faculty formData string false "Faculty"
 // @Param education formData domain.Education true "Education"
@@ -101,7 +104,10 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 			}
 			return nil
 		}(),
-		Education: domain.Education(form.Value["education"][0]),
+		Age:            func() *string { return &form.Value["age"][0] }(),
+		ChronicDisease: func() *string { return &form.Value["chronicDisease"][0] }(),
+		DrugAllergy:    func() *string { return &form.Value["drugAllergy"][0] }(),
+		Education:      domain.Education(form.Value["education"][0]),
 	}
 
 	// Register user

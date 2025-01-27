@@ -33,6 +33,9 @@ type User struct {
 	SizeJersey     string     `json:"sizeJersey"`
 	FoodLimitation string     `json:"foodLimitation"`
 	InvitationCode *string    `json:"invitationCode"`
+	Age 		  *string       `json:"age"`
+	ChronicDisease *string    `json:"chronicDisease"`
+	DrugAllergy    *string    `json:"drugAllergy"`
 	Status         Status     `json:"status"`
 	GraduatedYear  *string    `json:"graduatedYear"`
 	Faculty        *string    `json:"faculty"`

@@ -52,6 +52,12 @@ definitions:
     type: object
   domain.User:
     properties:
+      age:
+        type: string
+      chronicDisease:
+        type: string
+      drugAllergy:
+        type: string
       education:
         $ref: '#/definitions/domain.Education'
       email:
@@ -386,6 +392,18 @@ paths:
         name: image
         required: true
         type: file
+      - description: User Age
+        in: formData
+        name: age
+        type: string
+      - description: Chronic Disease
+        in: formData
+        name: chronicDisease
+        type: string
+      - description: Drug Allergy
+        in: formData
+        name: drugAllergy
+        type: string
       - description: Graduated Year
         in: formData
         name: graduatedYear

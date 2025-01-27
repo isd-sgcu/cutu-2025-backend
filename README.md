@@ -1,3 +1,7 @@
+Here’s the updated `README.md` file with the new fields (`Age`, `ChronicDisease`, and `DrugAllergy`) added to the `User` struct documentation. I've also ensured that the API endpoint descriptions and examples reflect these changes.
+
+---
+
 # CUTU-2025 Backend
 
 ## Stack
@@ -240,6 +244,9 @@ Register a new user in the system.
 - `invitationCode` (string) - Invitation Code
 - `status` (string) - User Status (`chula_student`, `alumni`, `general_public`, `general_student`)
 - `image` (file) - User Image
+- `age` (string) - User Age
+- `chronicDisease` (string) - Chronic Disease
+- `drugAllergy` (string) - Drug Allergy
 - `graduatedYear` (string) - Graduated Year
 - `faculty` (string) - Faculty
 - `education` (string) - User Education (`studying`, `graduated`)
@@ -339,7 +346,7 @@ A user object containing:
 - `status`: The user's status.
 - `role`: The user's role.
 - `education`: The user's education status.
-- `imageURL`: The user's profile image URL.
+- `imageUrl`: The user's profile image URL.
 - `faculty`: The user's faculty.
 - `foodLimitation`: The user's food limitations.
 - `graduatedYear`: The year the user graduated.
@@ -347,3 +354,6 @@ A user object containing:
 - `lastEntered`: Timestamp for the last QR scan.
 - `sizeJersey`: The user's jersey size.
 - `university`: The user's university.
+- `age`: The user's age.
+- `chronicDisease`: The user's chronic disease information.
+- `drugAllergy`: The user's drug allergy information.

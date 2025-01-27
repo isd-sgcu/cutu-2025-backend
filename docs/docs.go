@@ -318,6 +318,24 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "description": "User Age",
+                        "name": "age",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chronic Disease",
+                        "name": "chronicDisease",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Drug Allergy",
+                        "name": "drugAllergy",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
                         "description": "Graduated Year",
                         "name": "graduatedYear",
                         "in": "formData"
@@ -725,6 +743,15 @@ const docTemplate = `{
         "domain.User": {
             "type": "object",
             "properties": {
+                "age": {
+                    "type": "string"
+                },
+                "chronicDisease": {
+                    "type": "string"
+                },
+                "drugAllergy": {
+                    "type": "string"
+                },
                 "education": {
                     "$ref": "#/definitions/domain.Education"
                 },
