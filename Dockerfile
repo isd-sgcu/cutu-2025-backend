@@ -1,9 +1,7 @@
-# Build stage
-FROM golang:1.22.4-alpine3.20 as builder
+# Base Image
+FROM golang:1.21.3-alpine3.17 as base
 
-# Install required build dependencies
-RUN apk add --no-cache gcc musl-dev
-
+# Working directory
 WORKDIR /app
 
 # Copy go.mod and go.sum files
@@ -12,28 +10,25 @@ COPY go.mod go.sum ./
 # Download dependencies
 RUN go mod download
 
-# Copy the rest of the application code
+# Copy the source code
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/main.go
+RUN go build -o server ./cmd/main.go
 
-# Runtime stage
-FROM alpine:3.20
+# Create master image
+FROM alpine AS master
 
+# Working directory
 WORKDIR /app
 
-# Install necessary runtime dependencies
-RUN apk add --no-cache ca-certificates tzdata
+# Copy execute file
+COPY --from=base /app/server ./
 
-# Copy the built binary from the builder stage
-COPY --from=builder /app/server ./
+# Set ENV to production
+ENV GO_ENV production
 
-# Copy the .env file to the runner stage
-COPY .env ./
-
-
-# Expose the application port
+# Expose port 4000
 EXPOSE 4000
 
 # Run the application
