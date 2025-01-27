@@ -13,7 +13,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase) {
 
 	api := app.Group("/api/users")
 
-	api.Post("/signin", middleware.AuthMiddleware(userUsecase), userHandler.SignIn)
+	api.Post("/signin", userHandler.SignIn)
 
 	api.Get("/",
 		middleware.RoleMiddleware(
