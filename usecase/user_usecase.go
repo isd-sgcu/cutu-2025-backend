@@ -20,6 +20,7 @@ type UserRepositoryInterface interface {
 	GetById(id string) (domain.User, error)
 	GetByPhone(phone string) (domain.User, error)
 	GetByName(name string) ([]domain.User, error)
+	IsUIDExists(uid string) (bool, error)
 	Update(id string, user *domain.User) error
 	Delete(id string) error
 }
@@ -68,30 +69,48 @@ func isSameDay(t1, t2 time.Time) bool {
 }
 
 func (u *UserUsecase) Register(user *domain.User, fileBytes []byte, fileName string) (domain.TokenResponse, error) {
+	// Assign a role to the user
 	u.assignRole(user)
 
-	// Upload the file using the existing UploadFile method
+	// Generate a unique UID
+	for {
+		user.UID = utils.GenerateUID()
+
+		// Check if the UID already exists in the repository
+		uidExists, err := u.Repo.IsUIDExists(user.UID)
+		if err != nil {
+			return domain.TokenResponse{}, fmt.Errorf("error checking UID uniqueness: %w", err)
+		}
+
+		// Break the loop if the UID is unique
+		if !uidExists {
+			break
+		}
+	}
+
+	// Upload the image file
 	fileReader := bytes.NewReader(fileBytes)
 	s3Key := fmt.Sprintf("cutu-2025/%s", fileName)
 	s3URL, err := u.Storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
-
 	if err != nil {
-		return domain.TokenResponse{}, err
+		return domain.TokenResponse{}, fmt.Errorf("error uploading file: %w", err)
 	}
 
 	user.ImageURL = s3URL
-	// Save user in the repository
+
+	// Save the user in the repository
 	if err := u.Repo.Create(user); err != nil {
-		return domain.TokenResponse{}, err
+		return domain.TokenResponse{}, fmt.Errorf("error saving user: %w", err)
 	}
 
 	// Generate access and refresh tokens
 	jwtSecret := utils.GetEnv("SECRET_JWT_KEY", "")
 	accessToken, err := utils.GenerateTokens(user.ID, jwtSecret)
 	if err != nil {
-		return domain.TokenResponse{}, err
+		return domain.TokenResponse{}, fmt.Errorf("error generating tokens: %w", err)
 	}
 
+	// Return the token response
 	return domain.TokenResponse{
 		UserID:      user.ID,
 		AccessToken: accessToken,

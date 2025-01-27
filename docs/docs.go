@@ -804,6 +804,9 @@ const docTemplate = `{
                 "status": {
                     "$ref": "#/definitions/domain.Status"
                 },
+                "uid": {
+                    "type": "string"
+                },
                 "university": {
                     "type": "string"
                 }

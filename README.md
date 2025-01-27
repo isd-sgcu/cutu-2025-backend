@@ -339,7 +339,8 @@ Authenticate a user and return an access token.
 
 ### **User**
 A user object containing:
-- `id`: The user ID.
+- `id`: The user liff ID.
+- `uid`: The user UID
 - `name`: The user name.
 - `email`: The user email.
 - `phone`: The user phone number.

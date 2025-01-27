@@ -31,7 +31,7 @@ func (r *UserRepository) GetById(id string) (domain.User, error) {
 
 func (r *UserRepository) GetByName(name string) ([]domain.User, error) {
 	var users []domain.User
-	err := r.DB.Where("name LIKE ?", "%"+name+"%").Find(&users).Error
+	err := r.DB.Where("name ILIKE ?", "%"+name+"%").Find(&users).Error
 	return users, err
 }
 
@@ -49,4 +49,13 @@ func (r *UserRepository) Update(id string, user *domain.User) error {
 func (r *UserRepository) Delete(id string) error {
 	err := r.DB.Where("id = ?", id).Delete(&domain.User{}).Error
 	return err
+}
+
+func (r *UserRepository) IsUIDExists(uid string) (bool, error) {
+	var count int64
+	err := r.DB.Model(&domain.User{}).Where("uid = ?", uid).Count(&count).Error
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

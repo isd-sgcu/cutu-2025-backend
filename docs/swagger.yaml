@@ -88,6 +88,8 @@ definitions:
         type: string
       status:
         $ref: '#/definitions/domain.Status'
+      uid:
+        type: string
       university:
         type: string
     type: object
