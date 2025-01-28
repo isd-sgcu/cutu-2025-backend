@@ -105,6 +105,7 @@ func (u *UserUsecase) Register(user *domain.User, fileBytes []byte, fileName str
 	}
 
 	user.ImageURL = s3URL
+	user.RegisteredAt = time.Now()
 
 	if err := u.Repo.Create(user); err != nil {
 		return domain.TokenResponse{}, fmt.Errorf("error saving user: %w", err)

@@ -795,6 +795,9 @@ const docTemplate = `{
                     "description": "Make phone unique",
                     "type": "string"
                 },
+                "registeredAt": {
+                    "type": "string"
+                },
                 "role": {
                     "$ref": "#/definitions/domain.Role"
                 },
