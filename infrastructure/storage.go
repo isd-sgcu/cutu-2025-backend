@@ -1,38 +1,45 @@
 package infrastructure
 
 import (
-	"context"
-	"fmt"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"os"
+	"log"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/isd-sgcu/cutu2025-backend/config"
 )
 
-func UploadFileToS3(filePath, key string) (string, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(os.Getenv("AWS_REGION")))
-	if err != nil {
-		return "", err
+// ConnectToS3 initializes a new S3 client using AWS SDK v1
+func ConnectToS3(cfg *config.Config) *s3.S3 {
+	// ตรวจสอบว่าข้อมูล AWS credentials และ region ถูกตั้งค่าใน config หรือไม่
+	accessKey := cfg.AWSAccessKeyID
+	secretKey := cfg.AWSSecretAccessKey
+	region := cfg.AWSRegion
+
+	if accessKey == "" || secretKey == "" || region == "" {
+		log.Fatalf("AWS credentials or region not found in configuration: AccessKey=%s, Region=%s", accessKey, region)
 	}
 
-	client := s3.NewFromConfig(cfg)
+	creds := credentials.NewStaticCredentials(accessKey, secretKey, "")
 
-	// Example of uploading a file; you need to customize it for your use case
-	// Here is a simple example of uploading a file to S3
-	file, err := os.Open(filePath)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	bucketName := os.Getenv("S3_BUCKET_NAME")
-	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
-		Bucket: &bucketName,
-		Key:    &key,
-		Body:   file,
+	sess, err := session.NewSession(&aws.Config{
+		Region:           aws.String(region),
+		Credentials:      creds,
+		Endpoint:         aws.String("https://storage.googleapis.com"),
+		S3ForcePathStyle: aws.Bool(true),                              
 	})
 	if err != nil {
-		return "", err
+		log.Fatalf("Failed to create AWS session: %v", err)
 	}
 
-	return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", os.Getenv("S3_BUCKET_NAME"), key), nil
+	client := s3.New(sess)
+
+	_, err = client.ListBuckets(&s3.ListBucketsInput{})
+	if err != nil {
+		log.Fatalf("Failed to connect to S3 service: %v", err)
+	}
+
+	log.Println("Successfully connected to the S3 service")
+	return client
 }
