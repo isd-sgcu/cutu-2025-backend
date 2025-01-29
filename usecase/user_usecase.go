@@ -181,8 +181,8 @@ func (u *UserUsecase) GetQRURL(id string) (string, error) {
 		return "", err
 	}
 
-	baseURL := utils.GetEnv("PRODUCTION_BASE_URL", "http://localhost:4000/")
-	
+	baseURL := utils.GetEnv("PRODUCTION_BASE_URL", "http://localhost:4000")
+
 	return fmt.Sprintf("%s/api/users/qr/%s", baseURL, user.ID), nil
 }
 
