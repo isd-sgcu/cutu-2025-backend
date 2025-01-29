@@ -24,11 +24,12 @@ func main() {
 	app.Use(middleware.RequestLoggerMiddleware())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000", // Remove trailing slash
-		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
-		AllowHeaders:     "Origin,Content-Type,Accept,Authorization", // Add Authorization here
-		AllowCredentials: true,
+		AllowOrigins:     "http://localhost:3000", // Allowed origin
+		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Allow all necessary HTTP methods
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization", // Include Authorization and other headers
+		AllowCredentials: true, // Allow credentials to be included
 	}))
+	
 
 	// Connect to the database
 	db := infrastructure.ConnectDatabase(cfg)
@@ -37,15 +38,13 @@ func main() {
 	s3 := infrastructure.ConnectToS3(cfg)
 
 	// Connect to Cache
-	cache := infrastructure.ConnectRedis(cfg)
 
 	// Initialize repositories
 	repo := repository.NewUserRepository(db)
 	storage := repository.NewStorageRepository(s3)
-	cacheRepo := repository.NewCacheRepository(cache)
 
 	// Initialize use cases
-	userUsecase := usecase.NewUserUsecase(repo, storage, cacheRepo)
+	userUsecase := usecase.NewUserUsecase(repo, storage)
 
 	// Register routes
 	routes.RegisterUserRoutes(app, userUsecase) // Register the user routes
