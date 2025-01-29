@@ -42,4 +42,5 @@ func ConnectToS3(cfg *config.Config) *s3.S3 {
 
 	log.Println("Successfully connected to the S3 service")
 	return client
+	
 }
