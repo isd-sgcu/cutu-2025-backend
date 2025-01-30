@@ -1,35 +1,20 @@
-# Base Image
-FROM golang:1.21.3-alpine3.17 as base
+FROM golang:1.22-alpine3.18 AS builder
 
-# Working directory
 WORKDIR /app
 
-# Copy go.mod and go.sum files
 COPY go.mod go.sum ./
-
-# Download dependencies
 RUN go mod download
 
-# Copy the source code
 COPY . .
-
-# Build the application
 RUN go build -o server ./cmd/main.go
 
-# Create master image
-FROM alpine AS master
-
-# Working directory
+FROM alpine:3.18
 WORKDIR /app
 
-# Copy execute file
-COPY --from=base /app/server ./
+RUN apk --no-cache add ca-certificates
+COPY --from=builder /app/server .
+COPY .env .env
 
-# Set ENV to production
-ENV GO_ENV production
-
-# Expose port 4000
 EXPOSE 4000
 
-# Run the application
 CMD ["./server"]
