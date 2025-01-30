@@ -13,6 +13,7 @@ import (
 	"github.com/isd-sgcu/cutu2025-backend/repository"
 	"github.com/isd-sgcu/cutu2025-backend/routes"
 	"github.com/isd-sgcu/cutu2025-backend/usecase"
+	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 func main() {
@@ -24,7 +25,7 @@ func main() {
 	app.Use(middleware.RequestLoggerMiddleware())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000", // Allowed origin
+		AllowOrigins:     utils.GetEnv("CLIENT_BASE_URL", "http://localhost:3000"), // Allowed origin
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Allow all necessary HTTP methods
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization", // Include Authorization and other headers
 		AllowCredentials: true, // Allow credentials to be included
