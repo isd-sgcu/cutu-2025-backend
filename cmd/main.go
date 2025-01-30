@@ -22,6 +22,8 @@ func main() {
 
 	// Initialize Fiber app
 	app := fiber.New()
+
+	// Add middleware
 	app.Use(middleware.RequestLoggerMiddleware())
 
 	app.Use(cors.New(cors.Config{
