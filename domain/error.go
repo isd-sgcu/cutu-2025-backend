@@ -4,7 +4,7 @@ import "errors"
 
 // ErrorResponse represents a basic error structure
 type ErrorResponse struct {
-	Error string `json:"error"`
+	Error   string  `json:"error"`
 	Message *string `json:"message,omitempty"`
 }
 

@@ -250,6 +250,7 @@ Register a new user in the system.
 - `graduatedYear` (string) - Graduated Year
 - `faculty` (string) - Faculty
 - `education` (string) - User Education (`studying`, `graduated`)
+- 'isAcrophobia' (bool) - Is User acrophobia (`true`, `false`)
 
 **Response:**
 - `201 Created`: User successfully created.
@@ -358,3 +359,4 @@ A user object containing:
 - `age`: The user's age.
 - `chronicDisease`: The user's chronic disease information.
 - `drugAllergy`: The user's drug allergy information.
+- `isAcrophibia`: Check if user is acrophobia (bool).

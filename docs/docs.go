@@ -355,6 +355,13 @@ const docTemplate = `{
                         "in": "formData"
                     },
                     {
+                        "type": "boolean",
+                        "description": "Is Acrophobia",
+                        "name": "isAcroPhobia",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
                         "enum": [
                             "studying",
                             "graduated"
@@ -783,6 +790,9 @@ const docTemplate = `{
                 },
                 "invitationCode": {
                     "type": "string"
+                },
+                "isAcroPhobia": {
+                    "type": "boolean"
                 },
                 "lastEntered": {
                     "description": "Timestamp for the last QR scan",

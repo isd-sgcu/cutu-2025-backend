@@ -26,11 +26,10 @@ func main() {
 	app.Use(middleware.RequestLoggerMiddleware())
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "*", // Allowed origin
-		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS", // Allow all necessary HTTP methods
-		AllowHeaders:     "Origin, Content-Type, Accept, Authorization", // Include Authorization and other headers
+		AllowOrigins: "*",                                           // Allowed origin
+		AllowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",           // Allow all necessary HTTP methods
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization", // Include Authorization and other headers
 	}))
-	
 
 	// Connect to the database
 	db := infrastructure.ConnectDatabase(cfg)

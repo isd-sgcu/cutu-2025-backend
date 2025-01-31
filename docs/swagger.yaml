@@ -74,6 +74,8 @@ definitions:
         type: string
       invitationCode:
         type: string
+      isAcroPhobia:
+        type: boolean
       lastEntered:
         description: Timestamp for the last QR scan
         type: string
@@ -421,6 +423,11 @@ paths:
         in: formData
         name: faculty
         type: string
+      - description: Is Acrophobia
+        in: formData
+        name: isAcroPhobia
+        required: true
+        type: boolean
       - description: Education
         enum:
         - studying

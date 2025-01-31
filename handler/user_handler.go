@@ -41,6 +41,7 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Param drugAllergy formData string false "Drug Allergy"
 // @Param graduatedYear formData string false "Graduated Year"
 // @Param faculty formData string false "Faculty"
+// @Param isAcroPhobia formData bool true "Is Acrophobia"
 // @Param education formData domain.Education true "Education"
 // @Success 201 {object} domain.TokenResponse
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
@@ -108,6 +109,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 		ChronicDisease: func() *string { return &form.Value["chronicDisease"][0] }(),
 		DrugAllergy:    func() *string { return &form.Value["drugAllergy"][0] }(),
 		Education:      domain.Education(form.Value["education"][0]),
+		IsAcroPhobia:   form.Value["isAcroPhobia"][0] == "true",
 	}
 
 	// Register user

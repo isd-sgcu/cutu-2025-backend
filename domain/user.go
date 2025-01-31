@@ -45,4 +45,5 @@ type User struct {
 	RegisteredAt   time.Time  `json:"registeredAt"`
 	Role           Role       `json:"role"`
 	Education      Education  `json:"education"`
+	IsAcroPhobia   bool       `json:"isAcroPhobia"`
 }
