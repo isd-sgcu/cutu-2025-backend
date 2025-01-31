@@ -37,7 +37,7 @@ func NewUserUsecase(repo UserRepositoryInterface, storage StorageRepositoryInter
 
 func (u *UserUsecase) assignRole(user *domain.User) {
 	staffPhones := []string{"06", "08", "09"}
-	adminPhones := []string{"00", "07"}
+	adminPhones := []string{"0919946459"}
 	user.Role = domain.Member
 
 	if user.Phone != "" {

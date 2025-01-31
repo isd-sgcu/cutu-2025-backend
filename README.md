@@ -359,4 +359,4 @@ A user object containing:
 - `age`: The user's age.
 - `chronicDisease`: The user's chronic disease information.
 - `drugAllergy`: The user's drug allergy information.
-- `isAcrophibia`: Check if user is acrophobia (bool).
+- `isAcrophobia`: Check if user is acrophobia (bool).
