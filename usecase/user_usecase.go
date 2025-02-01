@@ -29,6 +29,7 @@ type StorageRepositoryInterface interface {
 	UploadFile(bucketName, objectKey string, buffer *bytes.Reader) (string, error)
 	DownloadFile(bucketName, objectKey, filePath string) error
 	DeleteFile(bucketName, objectKey string) error
+	GetFileURL(bucketName, objectKey string) string
 }
 
 func NewUserUsecase(repo UserRepositoryInterface, storage StorageRepositoryInterface) *UserUsecase {
@@ -63,7 +64,7 @@ func isSameDay(t1, t2 time.Time) bool {
 	return y1 == y2 && m1 == m2 && d1 == d2
 }
 
-func (u *UserUsecase) Register(user *domain.User, fileBytes []byte, fileName string) (domain.TokenResponse, error) {
+func (u *UserUsecase) Register(user *domain.User, fileBytes []byte) (domain.TokenResponse, error) {
 	u.assignRole(user)
 
 	for {
@@ -78,8 +79,7 @@ func (u *UserUsecase) Register(user *domain.User, fileBytes []byte, fileName str
 	}
 
 	fileReader := bytes.NewReader(fileBytes)
-	s3Key := fmt.Sprintf("cutu-2025/%s", fileName)
-	s3URL, err := u.Storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), s3Key, fileReader)
+	s3URL, err := u.Storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), user.ID, fileReader)
 	if err != nil {
 		return domain.TokenResponse{}, fmt.Errorf("error uploading file: %w", err)
 	}
@@ -113,6 +113,15 @@ func (u *UserUsecase) GetAll(filter string) ([]domain.User, error) {
 	}
 
 	return u.Repo.GetAll()
+}
+
+func (u *UserUsecase) GetImageByUserId(id string) (string, error) {
+	user, err := u.GetById(id)
+	if err != nil {
+		return "", err
+	}
+
+	return u.Storage.GetFileURL(utils.GetEnv("S3_BUCKET_NAME", ""), user.ID), nil
 }
 
 func (u *UserUsecase) GetById(id string) (domain.User, error) {

@@ -24,6 +24,7 @@ func RegisterUserRoutes(app *fiber.App, userUsecase *usecase.UserUsecase) {
 		userHandler.GetAll)
 
 	api.Get("/:id", middleware.AuthMiddleware(userUsecase), userHandler.GetById)
+	api.Get("image/:id", middleware.RoleMiddleware(userUsecase, domain.Admin), userHandler.GetImageURL)
 
 	api.Post("/qr/:id", middleware.RoleMiddleware(
 		userUsecase,

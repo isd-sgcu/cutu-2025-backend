@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/isd-sgcu/cutu2025-backend/utils"
 )
 
 type StorageRepository struct {
@@ -31,12 +32,20 @@ func (c *StorageRepository) UploadFile(bucketName, objectKey string, buffer *byt
 	if err != nil {
 		return "", fmt.Errorf("failed to upload file, %v", err)
 	}
+	url := utils.GetEnv("PRODUCTION_BASE_URL", "")
+	// Construct the URL of the uploaded file (using Google Cloud Storage URL format)
+	fileURL := fmt.Sprintf("%s/api/users/image/%s", url, objectKey)
 
+	// Return the URL of the uploaded file
+	return fileURL, nil
+}
+
+func (c *StorageRepository) GetFileURL(bucketName, objectKey string) string {
 	// Construct the URL of the uploaded file (using Google Cloud Storage URL format)
 	fileURL := fmt.Sprintf("https://%s.storage.googleapis.com/%s", bucketName, objectKey)
 
 	// Return the URL of the uploaded file
-	return fileURL, nil
+	return fileURL
 }
 
 func (c *StorageRepository) DownloadFile(bucketName, objectKey, filePath string) error {

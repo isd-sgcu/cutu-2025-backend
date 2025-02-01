@@ -14,6 +14,11 @@ definitions:
       message:
         type: string
     type: object
+  domain.ImageResponse:
+    properties:
+      url:
+        type: string
+    type: object
   domain.QrResponse:
     properties:
       qrUrl:
@@ -291,6 +296,33 @@ paths:
       security:
       - BearerAuth: []
       summary: Add Staff
+  /api/users/image/{id}:
+    get:
+      description: Retrieve a image URL for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ImageResponse'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: Failed to fetch user
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get Image URL
   /api/users/qr/{id}:
     get:
       description: Retrieve a QR code URL for a user

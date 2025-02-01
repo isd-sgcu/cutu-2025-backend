@@ -117,7 +117,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 		IsAcroPhobia:   form.Value["isAcroPhobia"] != nil && form.Value["isAcroPhobia"][0] == "true",
 	}
 
-	tokenResponse, err := h.Usecase.Register(user, fileBytes, imageFile.Filename)
+	tokenResponse, err := h.Usecase.Register(user, fileBytes)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to create user"})
 	}
@@ -364,4 +364,23 @@ func (h *UserHandler) AddStaff(c *fiber.Ctx) error {
 	}
 
 	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// Get Image URL godoc
+// @Summary Get Image URL
+// @Description Retrieve a image URL for a user
+// @Produce  json
+// @security BearerAuth
+// @Param id path string true "User ID"
+// @Success 200 {object} domain.ImageResponse
+// @Failure 404 {object} domain.ErrorResponse "User not found"
+// @Failure 500 {object} domain.ErrorResponse "Failed to fetch user"
+// @Router /api/users/image/{id} [get]
+func (h *UserHandler) GetImageURL(c *fiber.Ctx) error {
+	id := c.Params("id")
+	imageURL, err := h.Usecase.GetImageByUserId(id)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(domain.ErrorResponse{Error: "User not found"})
+	}
+	return c.Status(fiber.StatusOK).JSON(domain.ImageResponse{URL: imageURL})
 }

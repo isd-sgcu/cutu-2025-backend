@@ -155,6 +155,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/users/image/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retrieve a image URL for a user",
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get Image URL",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ImageResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Failed to fetch user",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/users/qr/{id}": {
             "get": {
                 "security": [
@@ -701,6 +744,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.ImageResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
                     "type": "string"
                 }
             }
