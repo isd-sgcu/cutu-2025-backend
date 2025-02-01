@@ -13,7 +13,6 @@ WORKDIR /app
 
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /app/server .
-COPY .env .env
 
 EXPOSE 4000
 
