@@ -49,70 +49,74 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Failure 500 {object} domain.ErrorResponse "Failed to create user"
 // @Router /api/users/register [post]
 func (h *UserHandler) Register(c *fiber.Ctx) error {
-	// Parse multipart form
 	form, err := c.MultipartForm()
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
 	}
 
-	// Get image file from form
 	imageFiles := form.File["image"]
 	if len(imageFiles) == 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Image is required"})
 	}
 
 	imageFile := imageFiles[0]
-
-	// Open file stream
 	file, err := imageFile.Open()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to open image file"})
 	}
 	defer file.Close()
 
-	// Convert the file stream to a byte slice
 	fileBytes, err := io.ReadAll(file)
-
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
 	}
 
-	// Map form values to user object
-	user := &domain.User{
-		ID:             form.Value["id"][0],
-		Name:           form.Value["name"][0],
-		Email:          form.Value["email"][0],
-		Phone:          form.Value["phone"][0],
-		University:     form.Value["university"][0],
-		SizeJersey:     form.Value["sizeJersey"][0],
-		FoodLimitation: form.Value["foodLimitation"][0],
-		InvitationCode: func() *string {
-			if v := form.Value["invitationCode"]; len(v) > 0 {
-				return &v[0]
-			}
-			return nil
-		}(),
-		Status: domain.StatusAlumni,
-		GraduatedYear: func() *string {
-			if v := form.Value["graduatedYear"]; len(v) > 0 {
-				return &v[0]
-			}
-			return nil
-		}(),
-		Faculty: func() *string {
-			if v := form.Value["faculty"]; len(v) > 0 {
-				return &v[0]
-			}
-			return nil
-		}(),
-		Age:            func() *string { return &form.Value["age"][0] }(),
-		ChronicDisease: func() *string { return &form.Value["chronicDisease"][0] }(),
-		DrugAllergy:    func() *string { return &form.Value["drugAllergy"][0] }(),
-		Education:      domain.Education(form.Value["education"][0]),
-		IsAcroPhobia:   form.Value["isAcroPhobia"][0] == "true",
+	// Helper function to get required form values
+	getFormValue := func(key string) (string, bool) {
+		if v, ok := form.Value[key]; ok && len(v) > 0 {
+			return v[0], true
+		}
+		return "", false
 	}
 
-	// Register user
+	// Helper function for optional values
+	getOptionalValue := func(key string) *string {
+		if v, ok := form.Value[key]; ok && len(v) > 0 {
+			return &v[0]
+		}
+		return nil
+	}
+
+	// Validate required fields
+	requiredFields := []string{"id", "name", "email", "phone", "university", "sizeJersey", "foodLimitation", "education"}
+	userData := make(map[string]string)
+	for _, field := range requiredFields {
+		if value, ok := getFormValue(field); ok {
+			userData[field] = value
+		} else {
+			return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: field + " is required"})
+		}
+	}
+
+	user := &domain.User{
+		ID:             userData["id"],
+		Name:           userData["name"],
+		Email:          userData["email"],
+		Phone:          userData["phone"],
+		University:     userData["university"],
+		SizeJersey:     userData["sizeJersey"],
+		FoodLimitation: userData["foodLimitation"],
+		Education:      domain.Education(userData["education"]),
+		InvitationCode: getOptionalValue("invitationCode"),
+		Status:         domain.StatusAlumni,
+		GraduatedYear:  getOptionalValue("graduatedYear"),
+		Faculty:        getOptionalValue("faculty"),
+		Age:            getOptionalValue("age"),
+		ChronicDisease: getOptionalValue("chronicDisease"),
+		DrugAllergy:    getOptionalValue("drugAllergy"),
+		IsAcroPhobia:   form.Value["isAcroPhobia"] != nil && form.Value["isAcroPhobia"][0] == "true",
+	}
+
 	tokenResponse, err := h.Usecase.Register(user, fileBytes, imageFile.Filename)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to create user"})
