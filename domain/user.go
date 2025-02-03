@@ -40,7 +40,7 @@ type User struct {
 	Status         Status     `json:"status"`
 	GraduatedYear  *string    `json:"graduatedYear"`
 	Faculty        *string    `json:"faculty"`
-	ImageURL       string     `json:"imageUrl"`
+	ImageURL       *string    `json:"imageUrl"`
 	LastEntered    *time.Time `json:"lastEntered"` // Timestamp for the last QR scan
 	RegisteredAt   time.Time  `json:"registeredAt"`
 	Role           Role       `json:"role"`

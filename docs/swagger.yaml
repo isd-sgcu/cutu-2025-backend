@@ -433,7 +433,6 @@ paths:
       - description: User Image
         in: formData
         name: image
-        required: true
         type: file
       - description: User Age
         in: formData

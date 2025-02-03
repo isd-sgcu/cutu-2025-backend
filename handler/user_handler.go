@@ -35,7 +35,7 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Param foodLimitation formData string false "Food Limitation"
 // @Param invitationCode formData string false "Invitation Code"
 // @Param status formData domain.Status true "User Status"
-// @Param image formData file true "User Image"
+// @Param image formData file false "User Image"
 // @Param age formData string false "User Age"
 // @Param chronicDisease formData string false "Chronic Disease"
 // @Param drugAllergy formData string false "Drug Allergy"
@@ -54,21 +54,20 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Invalid input"})
 	}
 
+	var fileBytes []byte
 	imageFiles := form.File["image"]
-	if len(imageFiles) == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(domain.ErrorResponse{Error: "Image is required"})
-	}
+	if len(imageFiles) > 0 {
+		imageFile := imageFiles[0]
+		file, err := imageFile.Open()
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to open image file"})
+		}
+		defer file.Close()
 
-	imageFile := imageFiles[0]
-	file, err := imageFile.Open()
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to open image file"})
-	}
-	defer file.Close()
-
-	fileBytes, err := io.ReadAll(file)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
+		fileBytes, err = io.ReadAll(file)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(domain.ErrorResponse{Error: "Failed to read image file"})
+		}
 	}
 
 	// Helper function to get required form values

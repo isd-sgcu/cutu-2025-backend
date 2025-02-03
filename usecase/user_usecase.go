@@ -67,6 +67,7 @@ func isSameDay(t1, t2 time.Time) bool {
 func (u *UserUsecase) Register(user *domain.User, fileBytes []byte) (domain.TokenResponse, error) {
 	u.assignRole(user)
 
+	// Generate unique UID
 	for {
 		user.UID = utils.GenerateUID()
 		uidExists, err := u.Repo.IsUIDExists(user.UID)
@@ -78,19 +79,28 @@ func (u *UserUsecase) Register(user *domain.User, fileBytes []byte) (domain.Toke
 		}
 	}
 
-	fileReader := bytes.NewReader(fileBytes)
-	s3URL, err := u.Storage.UploadFile(utils.GetEnv("S3_BUCKET_NAME", ""), user.ID, fileReader)
-	if err != nil {
-		return domain.TokenResponse{}, fmt.Errorf("error uploading file: %w", err)
+	// Only upload image if fileBytes is not empty
+	if len(fileBytes) > 0 {
+		fileReader := bytes.NewReader(fileBytes)
+		s3URL, err := u.Storage.UploadFile(
+			utils.GetEnv("S3_BUCKET_NAME", ""),
+			user.ID,
+			fileReader,
+		)
+		if err != nil {
+			return domain.TokenResponse{}, fmt.Errorf("error uploading file: %w", err)
+		}
+		user.ImageURL = &s3URL
 	}
 
-	user.ImageURL = s3URL
 	user.RegisteredAt = time.Now()
 
+	// Create user in database
 	if err := u.Repo.Create(user); err != nil {
 		return domain.TokenResponse{}, fmt.Errorf("error saving user: %w", err)
 	}
 
+	// Generate JWT token
 	jwtSecret := utils.GetEnv("SECRET_JWT_KEY", "")
 	accessToken, err := utils.GenerateTokens(user.ID, jwtSecret)
 	if err != nil {
@@ -204,7 +214,10 @@ func (u *UserUsecase) GetCardID(id string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return user.ImageURL, nil
+	if user.ImageURL != nil {
+		return *user.ImageURL, nil
+	}
+	return "", nil
 }
 
 func (u *UserUsecase) AddStaff(phone string) error {
