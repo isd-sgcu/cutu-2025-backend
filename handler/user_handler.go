@@ -42,7 +42,7 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Param graduatedYear formData string false "Graduated Year"
 // @Param faculty formData string false "Faculty"
 // @Param isAcroPhobia formData bool true "Is Acrophobia"
-// @Param education formData domain.Education true "Education"
+// @Param education formData domain.Education false "Education"
 // @Success 201 {object} domain.TokenResponse
 // @Failure 400 {object} domain.ErrorResponse "Invalid input"
 // @Failure 401 {object} domain.ErrorResponse "Unauthorized"
@@ -87,7 +87,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	}
 
 	// Validate required fields
-	requiredFields := []string{"id", "name", "phone", "foodLimitation", "education"}
+	requiredFields := []string{"id", "name", "phone", "foodLimitation"}
 	userData := make(map[string]string)
 	for _, field := range requiredFields {
 		if value, ok := getFormValue(field); ok {
@@ -105,7 +105,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 		University:     getOptionalValue("university"),
 		SizeJersey:     getOptionalValue("sizeJersey"),
 		FoodLimitation: userData["foodLimitation"],
-		Education:      domain.Education(userData["education"]),
+		Education:      func() *domain.Education { e := domain.Education(userData["education"]); return &e }(),
 		InvitationCode: getOptionalValue("invitationCode"),
 		Status:         domain.StatusAlumni,
 		GraduatedYear:  getOptionalValue("graduatedYear"),

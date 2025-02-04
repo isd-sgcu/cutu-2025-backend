@@ -408,8 +408,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Education",
                         "name": "education",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     }
                 ],
                 "responses": {

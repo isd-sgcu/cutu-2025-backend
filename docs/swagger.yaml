@@ -462,7 +462,6 @@ paths:
         - graduated
         in: formData
         name: education
-        required: true
         type: string
       produces:
       - application/json
