@@ -28,10 +28,10 @@ func NewUserHandler(usecase *usecase.UserUsecase) *UserHandler {
 // @Produce  json
 // @Param id formData string true "User ID"
 // @Param name formData string true "User Name"
-// @Param email formData string true "User Email"
+// @Param email formData string false "User Email"
 // @Param phone formData string true "User Phone"
-// @Param university formData string true "User University"
-// @Param sizeJersey formData string true "Jersey Size"
+// @Param university formData string false "User University"
+// @Param sizeJersey formData string false "Jersey Size"
 // @Param foodLimitation formData string false "Food Limitation"
 // @Param invitationCode formData string false "Invitation Code"
 // @Param status formData domain.Status true "User Status"
@@ -87,7 +87,7 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	}
 
 	// Validate required fields
-	requiredFields := []string{"id", "name", "email", "phone", "university", "sizeJersey", "foodLimitation", "education"}
+	requiredFields := []string{"id", "name", "phone", "foodLimitation", "education"}
 	userData := make(map[string]string)
 	for _, field := range requiredFields {
 		if value, ok := getFormValue(field); ok {
@@ -100,10 +100,10 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 	user := &domain.User{
 		ID:             userData["id"],
 		Name:           userData["name"],
-		Email:          userData["email"],
+		Email:          getOptionalValue("email"),
 		Phone:          userData["phone"],
-		University:     userData["university"],
-		SizeJersey:     userData["sizeJersey"],
+		University:     getOptionalValue("university"),
+		SizeJersey:     getOptionalValue("sizeJersey"),
 		FoodLimitation: userData["foodLimitation"],
 		Education:      domain.Education(userData["education"]),
 		InvitationCode: getOptionalValue("invitationCode"),

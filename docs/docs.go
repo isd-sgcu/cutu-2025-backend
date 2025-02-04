@@ -311,8 +311,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User Email",
                         "name": "email",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -325,15 +324,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "User University",
                         "name": "university",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
                         "description": "Jersey Size",
                         "name": "sizeJersey",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",

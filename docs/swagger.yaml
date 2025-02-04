@@ -395,7 +395,6 @@ paths:
       - description: User Email
         in: formData
         name: email
-        required: true
         type: string
       - description: User Phone
         in: formData
@@ -405,12 +404,10 @@ paths:
       - description: User University
         in: formData
         name: university
-        required: true
         type: string
       - description: Jersey Size
         in: formData
         name: sizeJersey
-        required: true
         type: string
       - description: Food Limitation
         in: formData

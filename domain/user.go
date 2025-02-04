@@ -28,10 +28,10 @@ type User struct {
 	ID             string     `json:"id" gorm:"primaryKey"`
 	UID            string     `json:"uid" gorm:"unique"`
 	Name           string     `json:"name"`
-	Email          string     `json:"email"`
+	Email          *string    `json:"email"`
 	Phone          string     `json:"phone" gorm:"unique"` // Make phone unique
-	University     string     `json:"university"`
-	SizeJersey     string     `json:"sizeJersey"`
+	University     *string    `json:"university"`
+	SizeJersey     *string    `json:"sizeJersey"`
 	FoodLimitation string     `json:"foodLimitation"`
 	InvitationCode *string    `json:"invitationCode"`
 	Age            *string    `json:"age"`
