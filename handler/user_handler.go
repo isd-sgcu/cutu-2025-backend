@@ -113,7 +113,10 @@ func (h *UserHandler) Register(c *fiber.Ctx) error {
 		Age:            getOptionalValue("age"),
 		ChronicDisease: getOptionalValue("chronicDisease"),
 		DrugAllergy:    getOptionalValue("drugAllergy"),
-		IsAcroPhobia:   form.Value["isAcroPhobia"] != nil && form.Value["isAcroPhobia"][0] == "true",
+		IsAcroPhobia: func() *bool {
+			b := form.Value["isAcroPhobia"] != nil && form.Value["isAcroPhobia"][0] == "true"
+			return &b
+		}(),
 	}
 
 	tokenResponse, err := h.Usecase.Register(user, fileBytes)

@@ -44,6 +44,6 @@ type User struct {
 	LastEntered    *time.Time `json:"lastEntered"` // Timestamp for the last QR scan
 	RegisteredAt   time.Time  `json:"registeredAt"`
 	Role           Role       `json:"role"`
-	Education      *Education  `json:"education"`
-	IsAcroPhobia   bool       `json:"isAcroPhobia"`
+	Education      *Education `json:"education"`
+	IsAcroPhobia   *bool      `json:"isAcroPhobia"`
 }
